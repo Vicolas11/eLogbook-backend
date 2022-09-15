@@ -5,3 +5,10 @@ type Blog {
   image: URL
   createdAt: DateTime
 }
+
+type ReturnRegisteredBlogPost {
+  id: ID!
+  title: String
+  content: String
+  image: URL
+}

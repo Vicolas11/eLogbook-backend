@@ -14,8 +14,8 @@ input StudentInput {
   level: Level
   gender: Gender
   place: String
-  email: String
-  password: String
+  email: String!
+  password: String!
   avatar: URL
   user: User
 }
@@ -28,8 +28,8 @@ input SupervisorInput {
   institute: String
   department: String
   gender: Gender
-  email: String
-  password: String
+  email: String!
+  password: String!
   avatar: URL
   user: User
 }
@@ -42,8 +42,8 @@ input CoordinatorInput {
   institute: String
   department: String
   gender: Gender
-  email: String
-  password: String
+  email: String!
+  password: String!
   avatar: URL
   user: User
 }
@@ -53,9 +53,9 @@ input OrganisationInput {
   sector: Sector
   phone: String
   address: String
-  employees: Integer
-  email: String
-  password: String
+  employees: Int
+  email: String!
+  password: String!
   logo: URL
   user: User
 }
@@ -63,8 +63,8 @@ input OrganisationInput {
 input AdminInput {
   firstName: String
   lastName: String
-  email: String
-  password: String
+  email: String!
+  password: String!
   avatar: URL
   user: User
 }

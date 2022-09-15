@@ -1,9 +1,16 @@
 type Mutation {
+  # Register Student
   student(registeredInput: StudentInput!): ReturnRegisteredStudent
+  # Register Supervisor
   supervisor(registeredInput: SupervisorInput!): ReturnRegisteredSupervisor
+  # Register Coordinator
   coordinator(registeredInput: CoordinatorInput!): ReturnRegisteredCoordinator
+  # Register Organisation
   organisation(registeredInput: OrganisationInput!): ReturnRegisteredOrganisation
+  # Register Admin
   admin(registeredInput: AdminInput!): ReturnRegisteredAdmin
+  # Create BlogPost
   blogPost(registeredInput: BlogPostInput!): ReturnRegisteredBlogPost
+  # Add Elibility Student
   eligible(registeredInput: EligibleInput!): ReturnRegisteredEligible
 }

@@ -6,7 +6,7 @@ type Admin {
   password: String
   avatar: URL
   user: User
-  joinedDate: DateTime  
+  joinedDate: DateTime
 }
 
 type RegisteredAdmin {
@@ -19,7 +19,7 @@ type RegisteredAdmin {
   user: User
 }
 
-type ReturnRegisteredAdmin extends Token {
+type ReturnRegisteredAdmin implements Token {
   accessToken: JWT!
   refreshToken: JWT!
   admin: RegisteredAdmin!

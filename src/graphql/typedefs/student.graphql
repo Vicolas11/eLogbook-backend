@@ -13,7 +13,8 @@ type Student {
   email: String
   password: String
   avatar: URL
-  user: User
+  user: User!
+  logbooks: [Logbook!]
   joinedDate: DateTime
 }
 
@@ -35,7 +36,7 @@ type RegisteredStudent {
   user: User
 }
 
-type ReturnRegisteredStudent extends Token {
+type ReturnRegisteredStudent implements Token {
   accessToken: JWT!
   refreshToken: JWT!
   student: RegisteredStudent!

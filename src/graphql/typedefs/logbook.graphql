@@ -6,5 +6,6 @@ type Logbook {
   label: String
   diagram: URL
   approved: Boolean
+  student: Student
   createdAt: DateTime
 }

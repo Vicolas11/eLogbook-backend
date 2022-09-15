@@ -1,11 +1,31 @@
 type Query {
+  # STUDENT
+  student(id: ID!): Student
+  students: [Student]
+
+  # SUPERVISOR
+  supervisor(id: ID!): Supervisor
+  supervisors: [Supervisor]
+
+  # COORDINATOR
+  coordinator(id: ID!): Coordinator
+  coordinators: [Coordinator]
+
+  # ORGANISATION
+  organisation(id: ID!): Organisation
+  organisations: [Organisation]
+
   # BLOG
-  blog(id: String): Blog
+  blog(id: ID!): Blog
   blogs: [Blog]
 
   # ELIGIBLE
-  eligible(id: String): Eligibility
+  eligible(id: ID!): Eligibility
   eligibles: [Eligibility]
+
+  # LOGBOOK
+  logbook(id: ID!): Logbook
+  logbooks: [Logbook]
 
   # LOGIN
   loginStudent(loginInput: LoginInput): ReturnRegisteredStudent
