@@ -1,0 +1,26 @@
+type Admin {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  avatar: URL
+  user: User
+  joinedDate: DateTime  
+}
+
+type RegisteredAdmin {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  password: String
+  avatar: URL
+  user: User
+}
+
+type ReturnRegisteredAdmin extends Token {
+  accessToken: JWT!
+  refreshToken: JWT!
+  admin: RegisteredAdmin!
+}

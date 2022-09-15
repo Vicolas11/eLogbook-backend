@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Level {
+  ND1
+  NC2
+  L3  @map("300")
+  L4  @map("400")
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum User {
+  Admin
+  Student
+  Coordinator
+  Supervisor
+  Organisation
+}
+
+enum Sector {
+  ICT               @map("Information Technology")
+  Healthcare
+  Agriculture
+  Transportation
+  Energy
+  Commercial
+  Financial         @map("Financial Services")
+  Aviation
+  Construction
+  Manufacturing
+  Education         @map("Education And Training")
+  Fashion
+  Logistics
+  Tourism
+  Telecommunication
+  Entertainment
+  Legal             @map("Legal Services")
+  Consultancy
+  Religion
+  Oil               @map("Oil And Gas")
+  Others
+}
+
+model Student {
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  matricNo   String
+  phone      String
+  address    String
+  institute  String
+  department String
+  level      Level
+  gender     Gender
+  place      String
+  email      String   @unique
+  password   String
+  avatar     String?
+  user       User
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
+}
+
+model Coordinator {
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  staffID    String
+  phone      String
+  institute  String
+  department String
+  gender     Gender
+  email      String   @unique
+  password   String
+  avatar     String?
+  user       User
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
+}
+
+model Supervisor {
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  staffID    String
+  phone      String
+  institute  String
+  department String
+  gender     Gender
+  email      String   @unique
+  password   String
+  avatar     String?
+  user       User
+  createAt   DateTime @default(now())
+  updateAt   DateTime @updatedAt
+}
+
+model Organisation {
+  id        String   @id @default(uuid())
+  name      String
+  sector    Sector
+  phone     String
+  address   String
+  employees Int
+  email     String   @unique
+  password  String
+  logo      String?
+  user      User
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
+  avatar    String?
+  user      User
+  createAt  DateTime @default(now())
+  updateAt  DateTime @updatedAt
+}
+
+model BlogPost {
+  id    String   @id @default(uuid())
+  title String
+  content String
+  image String
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}

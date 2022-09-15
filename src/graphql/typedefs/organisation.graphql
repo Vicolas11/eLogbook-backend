@@ -1,0 +1,32 @@
+type Organisation {
+  id: ID!
+  name: String
+  sector: Sector
+  phone: String
+  address: String
+  employees: Integer
+  email: String
+  password: String
+  logo: URL
+  user: User
+  joinedDate: DateTime
+}
+
+type RegisteredOrganisation {
+  id: ID!
+  name: String
+  sector: Sector
+  phone: String
+  address: String
+  employees: Integer
+  email: String
+  password: String
+  logo: URL
+  user: User
+}
+
+type ReturnRegisteredOrganisation extends Token {
+  accessToken: JWT!
+  refreshToken: JWT!
+  organisation: RegisteredOrganisation!
+}

@@ -1,0 +1,9 @@
+type Mutation {
+  student(registeredInput: StudentInput!): ReturnRegisteredStudent
+  supervisor(registeredInput: SupervisorInput!): ReturnRegisteredSupervisor
+  coordinator(registeredInput: CoordinatorInput!): ReturnRegisteredCoordinator
+  organisation(registeredInput: OrganisationInput!): ReturnRegisteredOrganisation
+  admin(registeredInput: AdminInput!): ReturnRegisteredAdmin
+  blogPost(registeredInput: BlogPostInput!): ReturnRegisteredBlogPost
+  eligible(registeredInput: EligibleInput!): ReturnRegisteredEligible
+}

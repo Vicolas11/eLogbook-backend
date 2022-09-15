@@ -1,0 +1,42 @@
+type Student {
+  id: ID!
+  firstName: String
+  lastName: String
+  matricNo: String
+  phone: String
+  address: String
+  institute: String
+  department: String
+  level: Level
+  gender: Gender
+  place: String
+  email: String
+  password: String
+  avatar: URL
+  user: User
+  joinedDate: DateTime
+}
+
+type RegisteredStudent {
+  id: ID!
+  firstName: String
+  lastName: String
+  matricNo: String
+  phone: String
+  address: String
+  institute: String
+  department: String
+  level: Level
+  gender: Gender
+  place: String
+  email: String
+  password: String
+  avatar: URL
+  user: User
+}
+
+type ReturnRegisteredStudent extends Token {
+  accessToken: JWT!
+  refreshToken: JWT!
+  student: RegisteredStudent!
+}

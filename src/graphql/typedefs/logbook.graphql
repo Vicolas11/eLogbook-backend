@@ -1,0 +1,10 @@
+type Logbook {
+  id: ID!
+  day: DateTime
+  title: String
+  description: String
+  label: String
+  diagram: URL
+  approved: Boolean
+  createdAt: DateTime
+}
