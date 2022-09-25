@@ -1,6 +1,16 @@
 // This is your Prisma schema file,
 // learn more about it in the docs https//pris.ly/d/prisma-schema
 
+generator joi {
+  provider = "prisma-joi-generator"
+  output   = "./joi"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./erd/erd.svg"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -55,115 +65,123 @@ enum Sector {
 }
 
 model Student {
-  id         String    @id @default(uuid())
-  firstName  String
-  lastName   String
-  matricNo   String
-  phone      String
-  address    String
-  institute  String
-  department String
-  level      Level
-  gender     Gender
-  place      String
-  email      String    @unique
-  password   String
-  avatar     String?
-  user       User
-  createAt   DateTime  @default(now())
-  updateAt   DateTime  @updatedAt
-  logbooks   Logbook[]
+  id             String        @id @default(uuid())
+  firstName      String
+  lastName       String
+  matricNo       String
+  phone          String
+  address        String?
+  institute      String
+  department     String
+  level          Level?
+  gender         Gender?
+  place          String
+  email          String        @unique
+  password       String
+  avatar         String?
+  user           User          @default(Student)
+  supervisor     Supervisor?   @relation(fields: [supervisorId], references: [id])
+  coordinator    Coordinator?  @relation(fields: [coordinatorId], references: [id])
+  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  joinedDate     DateTime      @default(now())
+  logbooks       Logbook[]
+  supervisorId   String?
+  coordinatorId  String?
+  organisationId String?
 }
 
 model Coordinator {
-  id         String   @id @default(uuid())
-  firstName  String
-  lastName   String
-  staffID    String
-  phone      String
-  institute  String
-  department String
-  gender     Gender
-  email      String   @unique
-  password   String
-  avatar     String?
-  user       User
-  createAt   DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  staffID     String
+  phone       String
+  institute   String
+  department  String
+  gender      Gender?
+  email       String       @unique
+  password    String
+  avatar      String?
+  user        User         @default(Coordinator)
+  students    Student[]
+  supervisors Supervisor[]
+  joinedDate  DateTime     @default(now())
 }
 
 model Supervisor {
-  id         String   @id @default(uuid())
-  firstName  String
-  lastName   String
-  staffID    String
-  phone      String
-  institute  String
-  department String
-  gender     Gender
-  email      String   @unique
-  password   String
-  avatar     String?
-  user       User
-  createAt   DateTime @default(now())
-  updateAt   DateTime @updatedAt
+  id          String       @id @default(uuid())
+  firstName   String
+  lastName    String
+  staffID     String
+  phone       String
+  institute   String
+  department  String
+  gender      Gender?
+  email       String       @unique
+  password    String
+  avatar      String?
+  user        User         @default(Supervisor)
+  students    Student[]
+  coordinator Coordinator? @relation(fields: [coordinatorId], references: [id])
+  joinedDate  DateTime     @default(now())
+
+  coordinatorId String
 }
 
 model Organisation {
-  id        String   @id @default(uuid())
-  name      String
-  sector    Sector
-  phone     String
-  address   String
-  employees Int
-  email     String   @unique
-  password  String
-  logo      String?
-  user      User
-  createAt  DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  id         String    @id @default(uuid())
+  name       String
+  sector     Sector
+  phone      String
+  address    String
+  employees  Int
+  email      String    @unique
+  password   String
+  logo       String?
+  user       User      @default(Organisation)
+  students   Student[]
+  joinedDate DateTime  @default(now())
 }
 
 model Admin {
-  id        String   @id @default(uuid())
-  firstName String
-  lastName  String
-  email     String   @unique
-  password  String
-  avatar    String?
-  user      User
-  createAt  DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String
+  email      String   @unique
+  password   String
+  avatar     String?
+  user       User     @default(Admin)
+  joinedDate DateTime @default(now())
 }
 
 model BlogPost {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   title     String
   content   String
   image     String
-  createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  createdAt DateTime? @default(now())
+  updateAt  DateTime? @updatedAt
 }
 
 model Eligibility {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   institute  String
   department String
   level      Level
   supervisor String
   matricNo   String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime? @default(now())
 }
 
 model Logbook {
-  id          String   @id @default(uuid())
-  day         DateTime
+  id          String    @id @default(uuid())
+  day         DateTime?
   title       String
   description String
   label       String
-  diagram     String
+  diagram     String?
   approved    Boolean
-  student     Student  @relation(fields: [studentId], references: [id])
-  createdAt   DateTime @default(now())
+  student     Student   @relation(fields: [studentId], references: [id])
+  createdAt   DateTime? @default(now())
   studentId   String
 }

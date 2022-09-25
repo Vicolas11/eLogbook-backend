@@ -14,7 +14,10 @@ type Student {
   password: String
   avatar: URL
   user: User!
-  logbooks: [Logbook!]
+  supervisor: Supervisor
+  coordinator: Coordinator
+  organisation: Organisation
+  logbooks: [Logbook]
   joinedDate: DateTime
 }
 

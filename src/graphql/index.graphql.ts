@@ -1,26 +1,14 @@
 import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
-import { ApolloServer, gql } from "apollo-server-express";
+// import { graphqlUploadExpress } from 'graphql-upload';
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
+import { ApolloServer } from "apollo-server-express";
 import { envConfig } from "../configs/env.config";
 import { PrismaClient } from "@prisma/client";
-import type { Application } from "express";
 import depthLimit from "graphql-depth-limit";
+import type { Application } from "express";
 import context from "./context";
 import schema from "./schema";
 import http from "http";
-
-// Construct a schema, using GraphQL schema language
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
-
-// Provide resolver functions for your schema fields
-const resolvers = {
-  Query: {
-    hello: () => 'Hello world!',
-  },
-};
 
 export const startApolloServer = async (app: Application) => {
   // Test Prisma Connection
@@ -35,8 +23,8 @@ export const startApolloServer = async (app: Application) => {
   const { port } = envConfig;
   const httpServer = http.createServer(app);
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema,
+    context,
     csrfPrevention: true,
     cache: "bounded",
     plugins: [
@@ -45,7 +33,13 @@ export const startApolloServer = async (app: Application) => {
     ],
     validationRules: [depthLimit(5)]
   });
+  
+
+  // This middleware must come before ApplyMiddleware method below
+  app.use(graphqlUploadExpress());
+
   await server.start();
+
   server.applyMiddleware({ app, path: "/api/graphql" });
 
   // Throw unhandled rejection to a fallback handler

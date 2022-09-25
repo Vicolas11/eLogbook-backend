@@ -6,7 +6,8 @@ config();
 const ENV = (process.env.NODE_ENV as string) || "development";
 
 export const envConfig: IEnvConfig = {
-  port: +(process.env.APP_PORT as unknown as number) || 5000,
+  url: process.env.BASE_URL as string,
+  port: +(process.env.APP_PORT as unknown as number) || 8080,
   dev: ENV === "development",
   prod: ENV === "production",
   test: ENV === "test",

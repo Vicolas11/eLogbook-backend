@@ -1,10 +1,18 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { IContext } from '../interfaces/context.interface';
+import { ReadStream } from 'fs';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+interface GraphQLFileUpload {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream( options?:{ encoding?: string, highWaterMark?: number } ): ReadStream;
+}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -12,65 +20,164 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** Banking account number is a string of 5 to 17 alphanumeric values for representing an generic account number */
   AccountNumber: any;
-  BigInt: any;
-  Byte: any;
-  CountryCode: any;
-  Cuid: any;
-  Currency: any;
-  DID: any;
-  Date: any;
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  BigInt: bigint;
+  /** The `Byte` scalar type represents byte value as a Buffer */
+  Byte: Buffer | string;
+  /** A country code as defined by ISO 3166-1 alpha-2 */
+  CountryCode: string;
+  /** A field whose value conforms to the standard cuid format as specified in https://github.com/ericelliott/cuid#broken-down */
+  Cuid: string;
+  /** A field whose value is a Currency: https://en.wikipedia.org/wiki/ISO_4217. */
+  Currency: string;
+  /** A field whose value conforms to the standard DID format as specified in did-core: https://www.w3.org/TR/did-core/. */
+  DID: string;
+  /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  Date: Date | string;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: Date;
-  Duration: any;
-  EmailAddress: any;
-  GUID: any;
-  HSL: any;
-  HSLA: any;
-  HexColorCode: any;
-  Hexadecimal: any;
-  IBAN: any;
-  IPv4: any;
-  IPv6: any;
-  ISBN: any;
-  ISO8601Duration: any;
+  /**
+   *
+   *     A string representing a duration conforming to the ISO8601 standard,
+   *     such as: P1W1DT13H23M34S
+   *     P is the duration designator (for period) placed at the start of the duration representation.
+   *     Y is the year designator that follows the value for the number of years.
+   *     M is the month designator that follows the value for the number of months.
+   *     W is the week designator that follows the value for the number of weeks.
+   *     D is the day designator that follows the value for the number of days.
+   *     T is the time designator that precedes the time components of the representation.
+   *     H is the hour designator that follows the value for the number of hours.
+   *     M is the minute designator that follows the value for the number of minutes.
+   *     S is the second designator that follows the value for the number of seconds.
+   *
+   *     Note the time designator, T, that precedes the time value.
+   *
+   *     Matches moment.js, Luxon and DateFns implementations
+   *     ,/. is valid for decimal places and +/- is a valid prefix
+   *
+   */
+  Duration: string;
+  /** A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/. */
+  EmailAddress: string;
+  /** A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier. */
+  GUID: string;
+  /** A field whose value is a CSS HSL color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#hsl()_and_hsla(). */
+  HSL: string;
+  /** A field whose value is a CSS HSLA color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#hsl()_and_hsla(). */
+  HSLA: string;
+  /** A field whose value is a hex color code: https://en.wikipedia.org/wiki/Web_colors. */
+  HexColorCode: string;
+  /** A field whose value is a hexadecimal: https://en.wikipedia.org/wiki/Hexadecimal. */
+  Hexadecimal: string;
+  /** A field whose value is an International Bank Account Number (IBAN): https://en.wikipedia.org/wiki/International_Bank_Account_Number. */
+  IBAN: string;
+  /** A field whose value is a IPv4 address: https://en.wikipedia.org/wiki/IPv4. */
+  IPv4: string;
+  /** A field whose value is a IPv6 address: https://en.wikipedia.org/wiki/IPv6. */
+  IPv6: string;
+  /** A field whose value is a ISBN-10 or ISBN-13 number: https://en.wikipedia.org/wiki/International_Standard_Book_Number. */
+  ISBN: string;
+  /**
+   *
+   *     A string representing a duration conforming to the ISO8601 standard,
+   *     such as: P1W1DT13H23M34S
+   *     P is the duration designator (for period) placed at the start of the duration representation.
+   *     Y is the year designator that follows the value for the number of years.
+   *     M is the month designator that follows the value for the number of months.
+   *     W is the week designator that follows the value for the number of weeks.
+   *     D is the day designator that follows the value for the number of days.
+   *     T is the time designator that precedes the time components of the representation.
+   *     H is the hour designator that follows the value for the number of hours.
+   *     M is the minute designator that follows the value for the number of minutes.
+   *     S is the second designator that follows the value for the number of seconds.
+   *
+   *     Note the time designator, T, that precedes the time value.
+   *
+   *     Matches moment.js, Luxon and DateFns implementations
+   *     ,/. is valid for decimal places and +/- is a valid prefix
+   *
+   */
+  ISO8601Duration: string;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
-  JSONObject: any;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: Record<string, any>;
+  /** A field whose value is a JSON Web Token (JWT): https://jwt.io/introduction. */
   JWT: string;
-  Latitude: any;
-  LocalDate: any;
-  LocalEndTime: any;
-  LocalTime: any;
-  Locale: any;
-  Long: any;
-  Longitude: any;
-  MAC: any;
-  NegativeFloat: any;
-  NegativeInt: any;
-  NonEmptyString: any;
-  NonNegativeFloat: any;
-  NonNegativeInt: any;
-  NonPositiveFloat: any;
-  NonPositiveInt: any;
-  ObjectID: any;
-  PhoneNumber: any;
-  Port: any;
-  PositiveFloat: any;
-  PositiveInt: any;
-  PostalCode: any;
-  RGB: any;
-  RGBA: any;
+  /** A field whose value is a valid decimal degrees latitude number (53.471): https://en.wikipedia.org/wiki/Latitude */
+  Latitude: string;
+  /** A local date string (i.e., with no associated timezone) in `YYYY-MM-DD` format, e.g. `2020-01-01`. */
+  LocalDate: string;
+  /** A local time string (i.e., with no associated timezone) in 24-hr `HH:mm[:ss[.SSS]]` format, e.g. `14:25` or `14:25:06` or `14:25:06.123`.  This scalar is very similar to the `LocalTime`, with the only difference being that `LocalEndTime` also allows `24:00` as a valid value to indicate midnight of the following day.  This is useful when using the scalar to represent the exclusive upper bound of a time block. */
+  LocalEndTime: string;
+  /** A local time string (i.e., with no associated timezone) in 24-hr `HH:mm[:ss[.SSS]]` format, e.g. `14:25` or `14:25:06` or `14:25:06.123`. */
+  LocalTime: string;
+  /** The locale in the format of a BCP 47 (RFC 5646) standard string */
+  Locale: string;
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  Long: bigint;
+  /** A field whose value is a valid decimal degrees longitude number (53.471): https://en.wikipedia.org/wiki/Longitude */
+  Longitude: string | number;
+  /** A field whose value is a IEEE 802 48-bit MAC address: https://en.wikipedia.org/wiki/MAC_address. */
+  MAC: string;
+  /** Floats that will have a value less than 0. */
+  NegativeFloat: number;
+  /** Integers that will have a value less than 0. */
+  NegativeInt: number;
+  /** A string that cannot be passed as an empty value */
+  NonEmptyString: string;
+  /** Floats that will have a value of 0 or more. */
+  NonNegativeFloat: number;
+  /** Integers that will have a value of 0 or more. */
+  NonNegativeInt: number;
+  /** Floats that will have a value of 0 or less. */
+  NonPositiveFloat: number;
+  /** Integers that will have a value of 0 or less. */
+  NonPositiveInt: number;
+  /** A field whose value conforms with the standard mongodb object ID as described here: https://docs.mongodb.com/manual/reference/method/ObjectId/#ObjectId. Example: 5e5677d71bdc2ae76344968c */
+  ObjectID: string;
+  /** A field whose value conforms to the standard E.164 format as specified in: https://en.wikipedia.org/wiki/E.164. Basically this is +17895551234. */
+  PhoneNumber: string;
+  /** A field whose value is a valid TCP port within the range of 0 to 65535: https://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_ports */
+  Port: string | number;
+  /** Floats that will have a value greater than 0. */
+  PositiveFloat: number;
+  /** Integers that will have a value greater than 0. */
+  PositiveInt: number;
+  /** A field whose value conforms to the standard postal code formats for United States, United Kingdom, Germany, Canada, France, Italy, Australia, Netherlands, Spain, Denmark, Sweden, Belgium, India, Austria, Portugal, Switzerland or Luxembourg. */
+  PostalCode: string;
+  /** A field whose value is a CSS RGB color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#rgb()_and_rgba(). */
+  RGB: string;
+  /** A field whose value is a CSS RGBA color: https://developer.mozilla.org/en-US/docs/Web/CSS/color_value#rgb()_and_rgba(). */
+  RGBA: string;
+  /** In the US, an ABA routing transit number (`ABA RTN`) is a nine-digit code to identify the financial institution. */
   RoutingNumber: any;
-  SafeInt: any;
-  Time: any;
+  /** The `SafeInt` scalar type represents non-fractional signed whole numeric values that are considered safe as defined by the ECMAScript specification. */
+  SafeInt: number;
+  /** A time string at UTC, such as 10:15:30Z, compliant with the `full-time` format outlined in section 5.6 of the RFC 3339profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  Time: Date | string;
+  /** A field whose value exists in the standard IANA Time Zone Database: https://www.iana.org/time-zones */
   TimeZone: any;
-  Timestamp: any;
+  /** The javascript `Date` as integer. Type represents date and time as number of milliseconds from start of UNIX epoch. */
+  Timestamp: Date | string | number;
+  /** A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt. */
   URL: string;
-  USCurrency: any;
-  UUID: any;
-  UnsignedFloat: any;
-  UnsignedInt: any;
-  UtcOffset: any;
-  Void: any;
+  /** A currency string, such as $21.25 */
+  USCurrency: string;
+  /** A field whose value is a generic Universally Unique Identifier: https://en.wikipedia.org/wiki/Universally_unique_identifier. */
+  UUID: string;
+  /** Floats that will have a value of 0 or more. */
+  UnsignedFloat: number;
+  /** Integers that will have a value of 0 or more. */
+  UnsignedInt: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: Promise<GraphQLFileUpload>;
+  /** A field whose value is a UTC Offset: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones */
+  UtcOffset: string;
+  /** Represents NULL values */
+  Void: void;
 };
 
 export type Admin = {
@@ -88,10 +195,9 @@ export type Admin = {
 export type AdminInput = {
   avatar?: InputMaybe<Scalars['URL']>;
   email: Scalars['String'];
-  firstName?: InputMaybe<Scalars['String']>;
-  lastName?: InputMaybe<Scalars['String']>;
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
   password: Scalars['String'];
-  user?: InputMaybe<User>;
 };
 
 export type Blog = {
@@ -104,9 +210,9 @@ export type Blog = {
 };
 
 export type BlogPostInput = {
-  content?: InputMaybe<Scalars['String']>;
-  image?: InputMaybe<Scalars['URL']>;
-  title?: InputMaybe<Scalars['String']>;
+  content: Scalars['String'];
+  image: Scalars['URL'];
+  title: Scalars['String'];
 };
 
 export type Coordinator = {
@@ -123,21 +229,22 @@ export type Coordinator = {
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
+  students?: Maybe<Array<Maybe<Student>>>;
+  supervisors?: Maybe<Array<Maybe<Supervisor>>>;
   user?: Maybe<User>;
 };
 
 export type CoordinatorInput = {
   avatar?: InputMaybe<Scalars['URL']>;
-  department?: InputMaybe<Scalars['String']>;
+  department: Scalars['String'];
   email: Scalars['String'];
-  firstName?: InputMaybe<Scalars['String']>;
+  firstName: Scalars['String'];
   gender?: InputMaybe<Gender>;
-  institute?: InputMaybe<Scalars['String']>;
-  lastName?: InputMaybe<Scalars['String']>;
+  institute: Scalars['String'];
+  lastName: Scalars['String'];
   password: Scalars['String'];
-  phone?: InputMaybe<Scalars['String']>;
-  staffID?: InputMaybe<Scalars['String']>;
-  user?: InputMaybe<User>;
+  phone: Scalars['String'];
+  staffID: Scalars['String'];
 };
 
 export type Eligibility = {
@@ -152,11 +259,11 @@ export type Eligibility = {
 };
 
 export type EligibleInput = {
-  department?: InputMaybe<Scalars['String']>;
-  institute?: InputMaybe<Scalars['String']>;
-  level?: InputMaybe<Level>;
-  matricNo?: InputMaybe<Scalars['String']>;
-  supervisor?: InputMaybe<Scalars['String']>;
+  department: Scalars['String'];
+  institute: Scalars['String'];
+  level: Level;
+  matricNo: Scalars['String'];
+  supervisor: Scalars['String'];
 };
 
 export enum Gender {
@@ -198,6 +305,8 @@ export type Mutation = {
   organisation?: Maybe<ReturnRegisteredOrganisation>;
   student?: Maybe<ReturnRegisteredStudent>;
   supervisor?: Maybe<ReturnRegisteredSupervisor>;
+  uploadAvatar?: Maybe<UploadResponse>;
+  uploadDiagram?: Maybe<UploadResponse>;
 };
 
 
@@ -235,6 +344,16 @@ export type MutationSupervisorArgs = {
   registeredInput: SupervisorInput;
 };
 
+
+export type MutationUploadAvatarArgs = {
+  file?: InputMaybe<Scalars['Upload']>;
+};
+
+
+export type MutationUploadDiagramArgs = {
+  file?: InputMaybe<Scalars['Upload']>;
+};
+
 export type Organisation = {
   __typename?: 'Organisation';
   address?: Maybe<Scalars['String']>;
@@ -247,19 +366,19 @@ export type Organisation = {
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   sector?: Maybe<Sector>;
+  students?: Maybe<Array<Maybe<Student>>>;
   user?: Maybe<User>;
 };
 
 export type OrganisationInput = {
-  address?: InputMaybe<Scalars['String']>;
+  address: Scalars['String'];
   email: Scalars['String'];
-  employees?: InputMaybe<Scalars['Int']>;
+  employees: Scalars['Int'];
   logo?: InputMaybe<Scalars['URL']>;
-  name?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
   password: Scalars['String'];
-  phone?: InputMaybe<Scalars['String']>;
-  sector?: InputMaybe<Sector>;
-  user?: InputMaybe<User>;
+  phone: Scalars['String'];
+  sector: Sector;
 };
 
 export type Query = {
@@ -498,6 +617,7 @@ export type Student = {
   __typename?: 'Student';
   address?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['URL']>;
+  coordinator?: Maybe<Coordinator>;
   department?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
@@ -507,34 +627,36 @@ export type Student = {
   joinedDate?: Maybe<Scalars['DateTime']>;
   lastName?: Maybe<Scalars['String']>;
   level?: Maybe<Level>;
-  logbooks?: Maybe<Array<Logbook>>;
+  logbooks?: Maybe<Array<Maybe<Logbook>>>;
   matricNo?: Maybe<Scalars['String']>;
+  organisation?: Maybe<Organisation>;
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   place?: Maybe<Scalars['String']>;
+  supervisor?: Maybe<Supervisor>;
   user: User;
 };
 
 export type StudentInput = {
   address?: InputMaybe<Scalars['String']>;
   avatar?: InputMaybe<Scalars['URL']>;
-  department?: InputMaybe<Scalars['String']>;
+  department: Scalars['String'];
   email: Scalars['String'];
-  firstName?: InputMaybe<Scalars['String']>;
+  firstName: Scalars['String'];
   gender?: InputMaybe<Gender>;
-  institute?: InputMaybe<Scalars['String']>;
-  lastName?: InputMaybe<Scalars['String']>;
+  institute: Scalars['String'];
+  lastName: Scalars['String'];
   level?: InputMaybe<Level>;
-  matricNo?: InputMaybe<Scalars['String']>;
+  matricNo: Scalars['String'];
   password: Scalars['String'];
-  phone?: InputMaybe<Scalars['String']>;
-  place?: InputMaybe<Scalars['String']>;
-  user?: InputMaybe<User>;
+  phone: Scalars['String'];
+  place: Scalars['String'];
 };
 
 export type Supervisor = {
   __typename?: 'Supervisor';
   avatar?: Maybe<Scalars['URL']>;
+  coordinator?: Maybe<Coordinator>;
   department?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
@@ -546,26 +668,33 @@ export type Supervisor = {
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
+  students?: Maybe<Array<Maybe<Student>>>;
   user?: Maybe<User>;
 };
 
 export type SupervisorInput = {
   avatar?: InputMaybe<Scalars['URL']>;
-  department?: InputMaybe<Scalars['String']>;
+  department: Scalars['String'];
   email: Scalars['String'];
-  firstName?: InputMaybe<Scalars['String']>;
+  firstName: Scalars['String'];
   gender?: InputMaybe<Gender>;
-  institute?: InputMaybe<Scalars['String']>;
-  lastName?: InputMaybe<Scalars['String']>;
+  institute: Scalars['String'];
+  lastName: Scalars['String'];
   password: Scalars['String'];
-  phone?: InputMaybe<Scalars['String']>;
-  staffID?: InputMaybe<Scalars['String']>;
-  user?: InputMaybe<User>;
+  phone: Scalars['String'];
+  staffID: Scalars['String'];
 };
 
 export type Token = {
   accessToken: Scalars['JWT'];
   refreshToken: Scalars['JWT'];
+};
+
+export type UploadResponse = {
+  __typename?: 'UploadResponse';
+  imageUrl: Scalars['URL'];
+  message: Scalars['String'];
+  status: Scalars['Int'];
 };
 
 export enum User {
@@ -740,6 +869,8 @@ export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']>;
+  Upload: ResolverTypeWrapper<Scalars['Upload']>;
+  UploadResponse: ResolverTypeWrapper<UploadResponse>;
   User: User;
   UtcOffset: ResolverTypeWrapper<Scalars['UtcOffset']>;
   Void: ResolverTypeWrapper<Scalars['Void']>;
@@ -839,6 +970,8 @@ export type ResolversParentTypes = {
   UUID: Scalars['UUID'];
   UnsignedFloat: Scalars['UnsignedFloat'];
   UnsignedInt: Scalars['UnsignedInt'];
+  Upload: Scalars['Upload'];
+  UploadResponse: UploadResponse;
   UtcOffset: Scalars['UtcOffset'];
   Void: Scalars['Void'];
 };
@@ -847,7 +980,7 @@ export interface AccountNumberScalarConfig extends GraphQLScalarTypeConfig<Resol
   name: 'AccountNumber';
 }
 
-export type AdminResolvers<ContextType = any, ParentType extends ResolversParentTypes['Admin'] = ResolversParentTypes['Admin']> = {
+export type AdminResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Admin'] = ResolversParentTypes['Admin']> = {
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -863,7 +996,7 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'BigInt';
 }
 
-export type BlogResolvers<ContextType = any, ParentType extends ResolversParentTypes['Blog'] = ResolversParentTypes['Blog']> = {
+export type BlogResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Blog'] = ResolversParentTypes['Blog']> = {
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -876,7 +1009,7 @@ export interface ByteScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Byte';
 }
 
-export type CoordinatorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Coordinator'] = ResolversParentTypes['Coordinator']> = {
+export type CoordinatorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Coordinator'] = ResolversParentTypes['Coordinator']> = {
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -889,6 +1022,8 @@ export type CoordinatorResolvers<ContextType = any, ParentType extends Resolvers
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  students?: Resolver<Maybe<Array<Maybe<ResolversTypes['Student']>>>, ParentType, ContextType>;
+  supervisors?: Resolver<Maybe<Array<Maybe<ResolversTypes['Supervisor']>>>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -921,7 +1056,7 @@ export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'Duration';
 }
 
-export type EligibilityResolvers<ContextType = any, ParentType extends ResolversParentTypes['Eligibility'] = ResolversParentTypes['Eligibility']> = {
+export type EligibilityResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Eligibility'] = ResolversParentTypes['Eligibility']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1008,7 +1143,7 @@ export interface LocaleScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'Locale';
 }
 
-export type LogbookResolvers<ContextType = any, ParentType extends ResolversParentTypes['Logbook'] = ResolversParentTypes['Logbook']> = {
+export type LogbookResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Logbook'] = ResolversParentTypes['Logbook']> = {
   approved?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   day?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -1033,7 +1168,7 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
   name: 'MAC';
 }
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+export type MutationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   admin?: Resolver<Maybe<ResolversTypes['ReturnRegisteredAdmin']>, ParentType, ContextType, RequireFields<MutationAdminArgs, 'registeredInput'>>;
   blogPost?: Resolver<Maybe<ResolversTypes['ReturnRegisteredBlogPost']>, ParentType, ContextType, RequireFields<MutationBlogPostArgs, 'registeredInput'>>;
   coordinator?: Resolver<Maybe<ResolversTypes['ReturnRegisteredCoordinator']>, ParentType, ContextType, RequireFields<MutationCoordinatorArgs, 'registeredInput'>>;
@@ -1041,6 +1176,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   organisation?: Resolver<Maybe<ResolversTypes['ReturnRegisteredOrganisation']>, ParentType, ContextType, RequireFields<MutationOrganisationArgs, 'registeredInput'>>;
   student?: Resolver<Maybe<ResolversTypes['ReturnRegisteredStudent']>, ParentType, ContextType, RequireFields<MutationStudentArgs, 'registeredInput'>>;
   supervisor?: Resolver<Maybe<ResolversTypes['ReturnRegisteredSupervisor']>, ParentType, ContextType, RequireFields<MutationSupervisorArgs, 'registeredInput'>>;
+  uploadAvatar?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, Partial<MutationUploadAvatarArgs>>;
+  uploadDiagram?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, Partial<MutationUploadDiagramArgs>>;
 };
 
 export interface NegativeFloatScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NegativeFloat'], any> {
@@ -1075,7 +1212,7 @@ export interface ObjectIdScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'ObjectID';
 }
 
-export type OrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
+export type OrganisationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Organisation'] = ResolversParentTypes['Organisation']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   employees?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1086,6 +1223,7 @@ export type OrganisationResolvers<ContextType = any, ParentType extends Resolver
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sector?: Resolver<Maybe<ResolversTypes['Sector']>, ParentType, ContextType>;
+  students?: Resolver<Maybe<Array<Maybe<ResolversTypes['Student']>>>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1110,7 +1248,7 @@ export interface PostalCodeScalarConfig extends GraphQLScalarTypeConfig<Resolver
   name: 'PostalCode';
 }
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   blog?: Resolver<Maybe<ResolversTypes['Blog']>, ParentType, ContextType, RequireFields<QueryBlogArgs, 'id'>>;
   blogs?: Resolver<Maybe<Array<Maybe<ResolversTypes['Blog']>>>, ParentType, ContextType>;
   coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType, RequireFields<QueryCoordinatorArgs, 'id'>>;
@@ -1140,7 +1278,7 @@ export interface RgbaScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'RGBA';
 }
 
-export type RegisteredAdminResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredAdmin'] = ResolversParentTypes['RegisteredAdmin']> = {
+export type RegisteredAdminResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RegisteredAdmin'] = ResolversParentTypes['RegisteredAdmin']> = {
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1151,7 +1289,7 @@ export type RegisteredAdminResolvers<ContextType = any, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RegisteredCoordinatorResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredCoordinator'] = ResolversParentTypes['RegisteredCoordinator']> = {
+export type RegisteredCoordinatorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RegisteredCoordinator'] = ResolversParentTypes['RegisteredCoordinator']> = {
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1167,7 +1305,7 @@ export type RegisteredCoordinatorResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RegisteredOrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredOrganisation'] = ResolversParentTypes['RegisteredOrganisation']> = {
+export type RegisteredOrganisationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RegisteredOrganisation'] = ResolversParentTypes['RegisteredOrganisation']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   employees?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -1181,7 +1319,7 @@ export type RegisteredOrganisationResolvers<ContextType = any, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RegisteredStudentResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredStudent'] = ResolversParentTypes['RegisteredStudent']> = {
+export type RegisteredStudentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RegisteredStudent'] = ResolversParentTypes['RegisteredStudent']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1200,7 +1338,7 @@ export type RegisteredStudentResolvers<ContextType = any, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type RegisteredSupervisorResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisteredSupervisor'] = ResolversParentTypes['RegisteredSupervisor']> = {
+export type RegisteredSupervisorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RegisteredSupervisor'] = ResolversParentTypes['RegisteredSupervisor']> = {
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1216,14 +1354,14 @@ export type RegisteredSupervisorResolvers<ContextType = any, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredAdminResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredAdmin'] = ResolversParentTypes['ReturnRegisteredAdmin']> = {
+export type ReturnRegisteredAdminResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredAdmin'] = ResolversParentTypes['ReturnRegisteredAdmin']> = {
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   admin?: Resolver<ResolversTypes['RegisteredAdmin'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredBlogPostResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredBlogPost'] = ResolversParentTypes['ReturnRegisteredBlogPost']> = {
+export type ReturnRegisteredBlogPostResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredBlogPost'] = ResolversParentTypes['ReturnRegisteredBlogPost']> = {
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
@@ -1231,34 +1369,34 @@ export type ReturnRegisteredBlogPostResolvers<ContextType = any, ParentType exte
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredCoordinatorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredCoordinator'] = ResolversParentTypes['ReturnRegisteredCoordinator']> = {
+export type ReturnRegisteredCoordinatorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredCoordinator'] = ResolversParentTypes['ReturnRegisteredCoordinator']> = {
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   coordinator?: Resolver<ResolversTypes['RegisteredCoordinator'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredEligibleResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredEligible'] = ResolversParentTypes['ReturnRegisteredEligible']> = {
+export type ReturnRegisteredEligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredEligible'] = ResolversParentTypes['ReturnRegisteredEligible']> = {
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   statusCode?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredOrganisationResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredOrganisation'] = ResolversParentTypes['ReturnRegisteredOrganisation']> = {
+export type ReturnRegisteredOrganisationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredOrganisation'] = ResolversParentTypes['ReturnRegisteredOrganisation']> = {
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   organisation?: Resolver<ResolversTypes['RegisteredOrganisation'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredStudentResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredStudent'] = ResolversParentTypes['ReturnRegisteredStudent']> = {
+export type ReturnRegisteredStudentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredStudent'] = ResolversParentTypes['ReturnRegisteredStudent']> = {
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   student?: Resolver<ResolversTypes['RegisteredStudent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ReturnRegisteredSupervisorResolvers<ContextType = any, ParentType extends ResolversParentTypes['ReturnRegisteredSupervisor'] = ResolversParentTypes['ReturnRegisteredSupervisor']> = {
+export type ReturnRegisteredSupervisorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredSupervisor'] = ResolversParentTypes['ReturnRegisteredSupervisor']> = {
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   supervisor?: Resolver<ResolversTypes['RegisteredSupervisor'], ParentType, ContextType>;
@@ -1273,9 +1411,10 @@ export interface SafeIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTy
   name: 'SafeInt';
 }
 
-export type StudentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Student'] = ResolversParentTypes['Student']> = {
+export type StudentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Student'] = ResolversParentTypes['Student']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
+  coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1285,17 +1424,20 @@ export type StudentResolvers<ContextType = any, ParentType extends ResolversPare
   joinedDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   level?: Resolver<Maybe<ResolversTypes['Level']>, ParentType, ContextType>;
-  logbooks?: Resolver<Maybe<Array<ResolversTypes['Logbook']>>, ParentType, ContextType>;
+  logbooks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Logbook']>>>, ParentType, ContextType>;
   matricNo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   place?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  supervisor?: Resolver<Maybe<ResolversTypes['Supervisor']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SupervisorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Supervisor'] = ResolversParentTypes['Supervisor']> = {
+export type SupervisorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Supervisor'] = ResolversParentTypes['Supervisor']> = {
   avatar?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
+  coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1307,6 +1449,7 @@ export type SupervisorResolvers<ContextType = any, ParentType extends ResolversP
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  students?: Resolver<Maybe<Array<Maybe<ResolversTypes['Student']>>>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1323,7 +1466,7 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
   name: 'Timestamp';
 }
 
-export type TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
+export type TokenResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
   __resolveType: TypeResolveFn<'ReturnRegisteredAdmin' | 'ReturnRegisteredCoordinator' | 'ReturnRegisteredOrganisation' | 'ReturnRegisteredStudent' | 'ReturnRegisteredSupervisor', ParentType, ContextType>;
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
@@ -1349,6 +1492,17 @@ export interface UnsignedIntScalarConfig extends GraphQLScalarTypeConfig<Resolve
   name: 'UnsignedInt';
 }
 
+export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
+  name: 'Upload';
+}
+
+export type UploadResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['UploadResponse'] = ResolversParentTypes['UploadResponse']> = {
+  imageUrl?: Resolver<ResolversTypes['URL'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface UtcOffsetScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UtcOffset'], any> {
   name: 'UtcOffset';
 }
@@ -1357,7 +1511,7 @@ export interface VoidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Void';
 }
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = IContext> = {
   AccountNumber?: GraphQLScalarType;
   Admin?: AdminResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
@@ -1438,6 +1592,8 @@ export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   UnsignedFloat?: GraphQLScalarType;
   UnsignedInt?: GraphQLScalarType;
+  Upload?: GraphQLScalarType;
+  UploadResponse?: UploadResponseResolvers<ContextType>;
   UtcOffset?: GraphQLScalarType;
   Void?: GraphQLScalarType;
 };

@@ -11,6 +11,8 @@ type Coordinator {
   password: String
   avatar: URL
   user: User
+  students: [Student]
+  supervisors: [Supervisor]
   joinedDate: DateTime
 }
 

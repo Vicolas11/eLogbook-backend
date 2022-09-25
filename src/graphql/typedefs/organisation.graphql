@@ -9,6 +9,7 @@ type Organisation {
   password: String
   logo: URL
   user: User
+  students: [Student]
   joinedDate: DateTime
 }
 

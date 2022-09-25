@@ -11,6 +11,8 @@ type Supervisor {
   password: String
   avatar: URL
   user: User
+  students: [Student]
+  coordinator: Coordinator
   joinedDate: DateTime
 }
 
