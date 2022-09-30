@@ -1,8 +1,7 @@
-import { Student } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
-import { prisma } from "./context";
+import { Student } from "@prisma/client";
+import { prisma } from "../context";
 
-// STUDENT
 export const getAllStudents = async (): Promise<Student[]> => {
   const students = await prisma.student.findMany();
   return students;

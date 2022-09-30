@@ -7,7 +7,7 @@ type Organisation {
   employees: Int
   email: String
   password: String
-  logo: URL
+  logo: String
   user: User
   students: [Student]
   joinedDate: DateTime
@@ -22,11 +22,22 @@ type RegisteredOrganisation {
   employees: Int
   email: String
   password: String
-  logo: URL
+  logo: String
   user: User
 }
 
+type DeletedOrganisation {
+  id: ID!
+  name: String
+  sector: Sector
+  email: String
+  status: Int
+  message: String
+}
+
 type ReturnRegisteredOrganisation implements Token {
+  status: Int!
+  message: String!
   accessToken: JWT!
   refreshToken: JWT!
   organisation: RegisteredOrganisation!

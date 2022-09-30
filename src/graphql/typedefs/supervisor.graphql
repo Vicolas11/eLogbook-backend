@@ -9,7 +9,7 @@ type Supervisor {
   gender: Gender
   email: String
   password: String
-  avatar: URL
+  avatar: String
   user: User
   students: [Student]
   coordinator: Coordinator
@@ -27,11 +27,22 @@ type RegisteredSupervisor {
   gender: Gender
   email: String
   password: String
-  avatar: URL
+  avatar: String
   user: User
 }
 
+type DeletedSupervisor {
+  id: ID!
+  firstName: String
+  lastName: String
+  staffID: String
+  status: Int
+  message: String
+}
+
 type ReturnRegisteredSupervisor implements Token {
+  status: Int!
+  message: String!
   accessToken: JWT!
   refreshToken: JWT!
   supervisor: RegisteredSupervisor!

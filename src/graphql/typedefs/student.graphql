@@ -12,7 +12,7 @@ type Student {
   place: String
   email: String
   password: String
-  avatar: URL
+  avatar: String
   user: User!
   supervisor: Supervisor
   coordinator: Coordinator
@@ -35,11 +35,22 @@ type RegisteredStudent {
   place: String
   email: String
   password: String
-  avatar: URL
+  avatar: String
   user: User
 }
 
+type DeletedStudent {
+  id: ID!
+  firstName: String
+  lastName: String
+  matricNo: String
+  status: Int
+  message: String
+}
+
 type ReturnRegisteredStudent implements Token {
+  status: Int!
+  message: String!
   accessToken: JWT!
   refreshToken: JWT!
   student: RegisteredStudent!

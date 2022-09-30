@@ -3,6 +3,20 @@ input LoginInput {
   password: String!
 }
 
+input AvatarInput {
+  file: Upload
+  id: ID!
+}
+
+# Change Password
+input ChangePswInput {
+  id: ID!
+  password: String!
+  con_password: String!
+  new_password: String!
+}
+
+# Student >>>>>>>>>>>>>>>>>>>>>>>>
 input StudentInput {
   firstName: String!
   lastName: String!
@@ -16,9 +30,25 @@ input StudentInput {
   place: String!
   email: String!
   password: String!
-  avatar: URL
+  avatar: String!
 }
 
+input UpdateStudentInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  address: String
+  level: Level
+  gender: Gender
+  avatar: String!
+}
+
+input DeleteStudentInput {
+  email: String!
+}
+
+# Supervisor >>>>>>>>>>>>>>>>>>>>>>
 input SupervisorInput {
   firstName: String!
   lastName: String!
@@ -29,9 +59,23 @@ input SupervisorInput {
   gender: Gender
   email: String!
   password: String!
-  avatar: URL
+  avatar: String
 }
 
+input UpdateSupervisorInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  gender: Gender
+  avatar: String
+}
+
+input DeleteSupervisorInput {
+  email: String!
+}
+
+# Coordinator >>>>>>>>>>>>>>>>>>>>>>
 input CoordinatorInput {
   firstName: String!
   lastName: String!
@@ -42,9 +86,23 @@ input CoordinatorInput {
   gender: Gender
   email: String!
   password: String!
-  avatar: URL
+  avatar: String
 }
 
+input UpdateCoordinatorInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  phone: String!
+  gender: Gender
+  avatar: String
+}
+
+input DeleteCoordinatorInput {
+  email: String!
+}
+
+# Organisation >>>>>>>>>>>>>>>>>>>>>>
 input OrganisationInput {
   name: String!
   sector: Sector!
@@ -53,21 +111,36 @@ input OrganisationInput {
   employees: Int!
   email: String!
   password: String!
-  logo: URL
+  logo: String!
 }
 
+input UpdateOrganisationInput {
+  email: String!
+  name: String!
+  sector: Sector!
+  phone: String!
+  address: String!
+  employees: Int!
+  logo: String!
+}
+
+input DeleteOrganisationInput {
+  email: String!
+}
+
+# Admin >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 input AdminInput {
   firstName: String!
   lastName: String!
   email: String!
   password: String!
-  avatar: URL
+  avatar: String
 }
 
 input BlogPostInput {
   title: String!
   content: String!
-  image: URL!
+  image: String!
 }
 
 input EligibleInput {

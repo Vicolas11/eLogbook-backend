@@ -78,7 +78,7 @@ model Student {
   place          String
   email          String        @unique
   password       String
-  avatar         String?
+  avatar         String
   user           User          @default(Student)
   supervisor     Supervisor?   @relation(fields: [supervisorId], references: [id])
   coordinator    Coordinator?  @relation(fields: [coordinatorId], references: [id])
@@ -88,6 +88,25 @@ model Student {
   supervisorId   String?
   coordinatorId  String?
   organisationId String?
+}
+
+model Supervisor {
+  id            String       @id @default(uuid())
+  firstName     String
+  lastName      String
+  staffID       String
+  phone         String
+  institute     String
+  department    String
+  gender        Gender?
+  email         String       @unique
+  password      String
+  avatar        String?
+  user          User         @default(Supervisor)
+  students      Student[]
+  coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
+  joinedDate    DateTime     @default(now())
+  coordinatorId String?
 }
 
 model Coordinator {
@@ -108,26 +127,6 @@ model Coordinator {
   joinedDate  DateTime     @default(now())
 }
 
-model Supervisor {
-  id          String       @id @default(uuid())
-  firstName   String
-  lastName    String
-  staffID     String
-  phone       String
-  institute   String
-  department  String
-  gender      Gender?
-  email       String       @unique
-  password    String
-  avatar      String?
-  user        User         @default(Supervisor)
-  students    Student[]
-  coordinator Coordinator? @relation(fields: [coordinatorId], references: [id])
-  joinedDate  DateTime     @default(now())
-
-  coordinatorId String
-}
-
 model Organisation {
   id         String    @id @default(uuid())
   name       String
@@ -137,7 +136,7 @@ model Organisation {
   employees  Int
   email      String    @unique
   password   String
-  logo       String?
+  logo       String
   user       User      @default(Organisation)
   students   Student[]
   joinedDate DateTime  @default(now())

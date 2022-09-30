@@ -1,5 +1,5 @@
 import { QueryResolvers, Student } from "../../generated";
-import { getAllStudents } from "../../data";
+import { getAllStudents } from "../../data/studentData";
 
 const studentQueries: QueryResolvers = {
   student: async (_, { id }, { loaders }) => {

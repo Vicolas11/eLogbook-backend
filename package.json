@@ -44,7 +44,6 @@
     "graphql-depth-limit": "^1.1.0",
     "graphql-scalars": "^1.18.0",
     "graphql-upload": "^15.0.1",
-    "graphql-upload-ts": "^2.0.3",
     "helmet": "^6.0.0",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",

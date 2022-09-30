@@ -9,8 +9,8 @@ type Coordinator {
   gender: Gender
   email: String
   password: String
-  avatar: URL
-  user: User
+  avatar: String
+  user: User!
   students: [Student]
   supervisors: [Supervisor]
   joinedDate: DateTime
@@ -27,11 +27,22 @@ type RegisteredCoordinator {
   gender: Gender
   email: String
   password: String
-  avatar: URL
+  avatar: String
   user: User
 }
 
+type DeletedCoordinator {
+  id: ID!
+  firstName: String
+  lastName: String
+  staffID: String
+  status: Int
+  message: String
+}
+
 type ReturnRegisteredCoordinator implements Token {
+  status: Int!
+  message: String!
   accessToken: JWT!
   refreshToken: JWT!
   coordinator: RegisteredCoordinator!
