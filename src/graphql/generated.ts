@@ -220,6 +220,19 @@ export type BlogPostInput = {
   title: Scalars['String'];
 };
 
+export type ChangePswInput = {
+  con_password: Scalars['String'];
+  id: Scalars['ID'];
+  new_password: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type ChangePswResponse = {
+  __typename?: 'ChangePswResponse';
+  message: Scalars['String'];
+  status: Scalars['Int'];
+};
+
 export type Coordinator = {
   __typename?: 'Coordinator';
   avatar?: Maybe<Scalars['String']>;
@@ -361,6 +374,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   admin?: Maybe<ReturnRegisteredAdmin>;
   blogPost?: Maybe<ReturnRegisteredBlogPost>;
+  changePassword?: Maybe<ChangePswResponse>;
   coordinator?: Maybe<ReturnRegisteredCoordinator>;
   deleteAvatar?: Maybe<UploadResponse>;
   deleteCoordinator?: Maybe<DeletedCoordinator>;
@@ -388,6 +402,11 @@ export type MutationAdminArgs = {
 
 export type MutationBlogPostArgs = {
   registerInput: BlogPostInput;
+};
+
+
+export type MutationChangePasswordArgs = {
+  input: ChangePswInput;
 };
 
 
@@ -951,6 +970,8 @@ export type ResolversTypes = {
   BlogPostInput: BlogPostInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']>;
+  ChangePswInput: ChangePswInput;
+  ChangePswResponse: ResolverTypeWrapper<ChangePswResponse>;
   Coordinator: ResolverTypeWrapper<Coordinator>;
   CoordinatorInput: CoordinatorInput;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']>;
@@ -1068,6 +1089,8 @@ export type ResolversParentTypes = {
   BlogPostInput: BlogPostInput;
   Boolean: Scalars['Boolean'];
   Byte: Scalars['Byte'];
+  ChangePswInput: ChangePswInput;
+  ChangePswResponse: ChangePswResponse;
   Coordinator: Coordinator;
   CoordinatorInput: CoordinatorInput;
   CountryCode: Scalars['CountryCode'];
@@ -1202,6 +1225,12 @@ export type BlogResolvers<ContextType = IContext, ParentType extends ResolversPa
 export interface ByteScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Byte'], any> {
   name: 'Byte';
 }
+
+export type ChangePswResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ChangePswResponse'] = ResolversParentTypes['ChangePswResponse']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type CoordinatorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Coordinator'] = ResolversParentTypes['Coordinator']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1405,6 +1434,7 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 export type MutationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   admin?: Resolver<Maybe<ResolversTypes['ReturnRegisteredAdmin']>, ParentType, ContextType, RequireFields<MutationAdminArgs, 'registerInput'>>;
   blogPost?: Resolver<Maybe<ResolversTypes['ReturnRegisteredBlogPost']>, ParentType, ContextType, RequireFields<MutationBlogPostArgs, 'registerInput'>>;
+  changePassword?: Resolver<Maybe<ResolversTypes['ChangePswResponse']>, ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'input'>>;
   coordinator?: Resolver<Maybe<ResolversTypes['ReturnRegisteredCoordinator']>, ParentType, ContextType, RequireFields<MutationCoordinatorArgs, 'registerInput'>>;
   deleteAvatar?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationDeleteAvatarArgs, 'deleteInput'>>;
   deleteCoordinator?: Resolver<Maybe<ResolversTypes['DeletedCoordinator']>, ParentType, ContextType, RequireFields<MutationDeleteCoordinatorArgs, 'emailInput'>>;
@@ -1769,6 +1799,7 @@ export type Resolvers<ContextType = IContext> = {
   BigInt?: GraphQLScalarType;
   Blog?: BlogResolvers<ContextType>;
   Byte?: GraphQLScalarType;
+  ChangePswResponse?: ChangePswResponseResolvers<ContextType>;
   Coordinator?: CoordinatorResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;

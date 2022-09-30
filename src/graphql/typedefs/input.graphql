@@ -8,7 +8,7 @@ input AvatarInput {
   id: ID!
 }
 
-# Change Password
+# Change Password >>>>>>>>>>>>>>>>
 input ChangePswInput {
   id: ID!
   password: String!

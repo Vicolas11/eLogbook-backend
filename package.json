@@ -15,7 +15,8 @@
     "deploy": "prisma migrate deploy",
     "format": "npx prisma format",
     "studio": "npx prisma studio",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "log:schema": "npx ts-node src/graphql/schema.ts"
   },
   "keywords": [],
   "author": "Vicolas Akoh",

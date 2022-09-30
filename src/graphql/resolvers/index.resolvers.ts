@@ -7,6 +7,7 @@ import organisationQueries from "./organisation/queries";
 import coordinatorQueries from "./coordinator/queries";
 import supervisorQueries from "./supervisor/queries";
 import studentMutations from "./student/mutations";
+import changePswMutation from "./changepassword";
 import studentQueries from "./student/queries";
 import uploadFileMutation from "./uploadfile";
 import { Resolvers } from "../generated";
@@ -21,6 +22,7 @@ const resolvers: Resolvers = {
   },
   Upload: GraphQLUpload,
   Mutation: {
+    ...changePswMutation,
     ...uploadFileMutation,
     ...studentMutations,
     ...supervisorMutations,
