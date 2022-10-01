@@ -6,8 +6,8 @@ import compression from "compression";
 import { config } from "dotenv";
 import xss from "xss-clean";
 import helmet from "helmet";
-import cors from "cors";
 import { join } from "path";
+import cors from "cors";
 
 config();
 
@@ -27,7 +27,7 @@ config();
   // Parses incoming requests with urlencoded payloads
   app.use(express.urlencoded({ extended: true }));
 
-  // Parse and display static path 
+  // Parse and display static path
   app.use(express.static(join(__dirname, "../public/upload/")));
   app.use("/avatar", express.static(join(__dirname, "avatar")));
   app.use("/diagrams", express.static(join(__dirname, "diagrams")));

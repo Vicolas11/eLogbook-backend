@@ -1,4 +1,4 @@
-import { DeleteOrganisationInputSchema, RegisterOrganisationInputSchema, UpdateOrganisationInputSchema } from "../../../joi/organisation.joi";
+import { DelOrganisationInputSchema, OrganisationInputSchema, UpdateOrganisationInputSchema } from "../../../joi/organisation.joi";
 import { DeletedOrganisation, MutationResolvers, ReturnRegisteredOrganisation } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
@@ -10,7 +10,7 @@ const organisationMutations: MutationResolvers = {
   // CREATE ORGANISATION USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   organisation: async (_, { registerInput: input }, { prisma }) => {
     // Validate Input field
-    const validate = RegisterOrganisationInputSchema.validate(input);
+    const validate = OrganisationInputSchema.validate(input);
     const { error } = validate;
 
     if (error)
@@ -119,7 +119,7 @@ const organisationMutations: MutationResolvers = {
     const { email } = emailInput;
 
     // Validate Input field
-    const validate = DeleteOrganisationInputSchema.validate(emailInput);
+    const validate = DelOrganisationInputSchema.validate(emailInput);
     const { error } = validate;
 
     if (error)

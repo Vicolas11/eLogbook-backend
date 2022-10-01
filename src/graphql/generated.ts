@@ -200,17 +200,20 @@ export type AdminInput = {
   password: Scalars['String'];
 };
 
-export type AvatarInput = {
-  file?: InputMaybe<Scalars['Upload']>;
-  id: Scalars['ID'];
-};
-
 export type Blog = {
   __typename?: 'Blog';
   content?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   id: Scalars['ID'];
-  image?: Maybe<Scalars['URL']>;
+  image?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+};
+
+export type BlogPost = {
+  __typename?: 'BlogPost';
+  content?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  image?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
 };
 
@@ -263,6 +266,14 @@ export type CoordinatorInput = {
   password: Scalars['String'];
   phone: Scalars['String'];
   staffID: Scalars['String'];
+};
+
+export type DelEligibleInput = {
+  id: Scalars['ID'];
+};
+
+export type DeleteBlogPostInput = {
+  id: Scalars['ID'];
 };
 
 export type DeleteCoordinatorInput = {
@@ -321,8 +332,8 @@ export type DeletedSupervisor = {
   status?: Maybe<Scalars['Int']>;
 };
 
-export type Eligibility = {
-  __typename?: 'Eligibility';
+export type Eligible = {
+  __typename?: 'Eligible';
   createdAt?: Maybe<Scalars['DateTime']>;
   department?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
@@ -338,6 +349,25 @@ export type EligibleInput = {
   level: Level;
   matricNo: Scalars['String'];
   supervisor: Scalars['String'];
+};
+
+export enum FileDir {
+  Avatar = 'avatar',
+  Blogposts = 'blogposts',
+  Chats = 'chats',
+  Diagrams = 'diagrams',
+  Logo = 'logo'
+}
+
+export type FileInput = {
+  file?: InputMaybe<Scalars['Upload']>;
+  type: FileDir;
+};
+
+export type FileUpdateInput = {
+  file?: InputMaybe<Scalars['Upload']>;
+  id: Scalars['ID'];
+  type: FileDir;
 };
 
 export enum Gender {
@@ -373,25 +403,28 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   admin?: Maybe<ReturnRegisteredAdmin>;
-  blogPost?: Maybe<ReturnRegisteredBlogPost>;
+  blogPost?: Maybe<ReturnBlogPost>;
   changePassword?: Maybe<ChangePswResponse>;
   coordinator?: Maybe<ReturnRegisteredCoordinator>;
-  deleteAvatar?: Maybe<UploadResponse>;
+  deleteBlogPost?: Maybe<ReturnBlogPost>;
   deleteCoordinator?: Maybe<DeletedCoordinator>;
+  deleteEligible?: Maybe<ReturnRegisterEligible>;
+  deleteFile?: Maybe<UploadResponse>;
   deleteOrganisation?: Maybe<DeletedOrganisation>;
   deleteStudent?: Maybe<DeletedStudent>;
   deleteSupervisor?: Maybe<DeletedSupervisor>;
-  eligible?: Maybe<ReturnRegisteredEligible>;
+  eligible?: Maybe<ReturnRegisterEligible>;
   organisation?: Maybe<ReturnRegisteredOrganisation>;
   student?: Maybe<ReturnRegisteredStudent>;
   supervisor?: Maybe<ReturnRegisteredSupervisor>;
-  updateAvatar?: Maybe<UploadResponse>;
+  updateBlogPost?: Maybe<ReturnBlogPost>;
   updateCoordinator?: Maybe<ReturnRegisteredCoordinator>;
+  updateEligible?: Maybe<ReturnRegisterEligible>;
+  updateFile?: Maybe<UploadResponse>;
   updateOrganisation?: Maybe<ReturnRegisteredOrganisation>;
   updateStudent?: Maybe<ReturnRegisteredStudent>;
   updateSupervisor?: Maybe<ReturnRegisteredSupervisor>;
-  uploadAvatar?: Maybe<UploadResponse>;
-  uploadDiagram?: Maybe<UploadResponse>;
+  uploadFile?: Maybe<UploadResponse>;
 };
 
 
@@ -415,13 +448,23 @@ export type MutationCoordinatorArgs = {
 };
 
 
-export type MutationDeleteAvatarArgs = {
-  deleteInput: Scalars['ID'];
+export type MutationDeleteBlogPostArgs = {
+  input: DeleteBlogPostInput;
 };
 
 
 export type MutationDeleteCoordinatorArgs = {
   emailInput: DeleteCoordinatorInput;
+};
+
+
+export type MutationDeleteEligibleArgs = {
+  deleteInput: DelEligibleInput;
+};
+
+
+export type MutationDeleteFileArgs = {
+  deleteInput: Scalars['ID'];
 };
 
 
@@ -460,13 +503,23 @@ export type MutationSupervisorArgs = {
 };
 
 
-export type MutationUpdateAvatarArgs = {
-  updateInput: AvatarInput;
+export type MutationUpdateBlogPostArgs = {
+  input: UpdateBlogPostInput;
 };
 
 
 export type MutationUpdateCoordinatorArgs = {
   updateInput: UpdateCoordinatorInput;
+};
+
+
+export type MutationUpdateEligibleArgs = {
+  updateInput: UpdateEligibleInput;
+};
+
+
+export type MutationUpdateFileArgs = {
+  updateInput: FileUpdateInput;
 };
 
 
@@ -485,13 +538,8 @@ export type MutationUpdateSupervisorArgs = {
 };
 
 
-export type MutationUploadAvatarArgs = {
-  file: Scalars['Upload'];
-};
-
-
-export type MutationUploadDiagramArgs = {
-  file?: InputMaybe<Scalars['Upload']>;
+export type MutationUploadFileArgs = {
+  input: FileInput;
 };
 
 export type Organisation = {
@@ -527,8 +575,8 @@ export type Query = {
   blogs?: Maybe<Array<Maybe<Blog>>>;
   coordinator?: Maybe<Coordinator>;
   coordinators?: Maybe<Array<Maybe<Coordinator>>>;
-  eligible?: Maybe<Eligibility>;
-  eligibles?: Maybe<Array<Maybe<Eligibility>>>;
+  eligible?: Maybe<Eligible>;
+  eligibles?: Maybe<Array<Maybe<Eligible>>>;
   logbook?: Maybe<Logbook>;
   logbooks?: Maybe<Array<Maybe<Logbook>>>;
   loginAdmin?: Maybe<ReturnRegisteredAdmin>;
@@ -566,27 +614,27 @@ export type QueryLogbookArgs = {
 
 
 export type QueryLoginAdminArgs = {
-  loginInput?: InputMaybe<LoginInput>;
+  loginInput: LoginInput;
 };
 
 
 export type QueryLoginCoordinatorArgs = {
-  loginInput?: InputMaybe<LoginInput>;
+  loginInput: LoginInput;
 };
 
 
 export type QueryLoginOrganisationArgs = {
-  loginInput?: InputMaybe<LoginInput>;
+  loginInput: LoginInput;
 };
 
 
 export type QueryLoginStudentArgs = {
-  loginInput?: InputMaybe<LoginInput>;
+  loginInput: LoginInput;
 };
 
 
 export type QueryLoginSupervisorArgs = {
-  loginInput?: InputMaybe<LoginInput>;
+  loginInput: LoginInput;
 };
 
 
@@ -680,19 +728,25 @@ export type RegisteredSupervisor = {
   user?: Maybe<User>;
 };
 
+export type ReturnBlogPost = {
+  __typename?: 'ReturnBlogPost';
+  blogpost?: Maybe<BlogPost>;
+  message?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['Int']>;
+};
+
+export type ReturnRegisterEligible = {
+  __typename?: 'ReturnRegisterEligible';
+  eligible?: Maybe<ReturnedEligible>;
+  message?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['Int']>;
+};
+
 export type ReturnRegisteredAdmin = Token & {
   __typename?: 'ReturnRegisteredAdmin';
   accessToken: Scalars['JWT'];
   admin: RegisteredAdmin;
   refreshToken: Scalars['JWT'];
-};
-
-export type ReturnRegisteredBlogPost = {
-  __typename?: 'ReturnRegisteredBlogPost';
-  content?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  image?: Maybe<Scalars['URL']>;
-  title?: Maybe<Scalars['String']>;
 };
 
 export type ReturnRegisteredCoordinator = Token & {
@@ -702,12 +756,6 @@ export type ReturnRegisteredCoordinator = Token & {
   message: Scalars['String'];
   refreshToken: Scalars['JWT'];
   status: Scalars['Int'];
-};
-
-export type ReturnRegisteredEligible = {
-  __typename?: 'ReturnRegisteredEligible';
-  message?: Maybe<Scalars['String']>;
-  statusCode?: Maybe<Scalars['Int']>;
 };
 
 export type ReturnRegisteredOrganisation = Token & {
@@ -735,6 +783,16 @@ export type ReturnRegisteredSupervisor = Token & {
   refreshToken: Scalars['JWT'];
   status: Scalars['Int'];
   supervisor: RegisteredSupervisor;
+};
+
+export type ReturnedEligible = {
+  __typename?: 'ReturnedEligible';
+  department?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  institute?: Maybe<Scalars['String']>;
+  level?: Maybe<Level>;
+  matricNo?: Maybe<Scalars['String']>;
+  supervisor?: Maybe<Scalars['String']>;
 };
 
 export enum Sector {
@@ -838,6 +896,13 @@ export type Token = {
   refreshToken: Scalars['JWT'];
 };
 
+export type UpdateBlogPostInput = {
+  content: Scalars['String'];
+  id: Scalars['ID'];
+  image: Scalars['String'];
+  title: Scalars['String'];
+};
+
 export type UpdateCoordinatorInput = {
   avatar?: InputMaybe<Scalars['String']>;
   email: Scalars['String'];
@@ -845,6 +910,13 @@ export type UpdateCoordinatorInput = {
   gender?: InputMaybe<Gender>;
   lastName: Scalars['String'];
   phone: Scalars['String'];
+};
+
+export type UpdateEligibleInput = {
+  id: Scalars['ID'];
+  level: Level;
+  matricNo: Scalars['String'];
+  supervisor: Scalars['String'];
 };
 
 export type UpdateOrganisationInput = {
@@ -964,9 +1036,9 @@ export type ResolversTypes = {
   AccountNumber: ResolverTypeWrapper<Scalars['AccountNumber']>;
   Admin: ResolverTypeWrapper<Admin>;
   AdminInput: AdminInput;
-  AvatarInput: AvatarInput;
   BigInt: ResolverTypeWrapper<Scalars['BigInt']>;
   Blog: ResolverTypeWrapper<Blog>;
+  BlogPost: ResolverTypeWrapper<BlogPost>;
   BlogPostInput: BlogPostInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Byte: ResolverTypeWrapper<Scalars['Byte']>;
@@ -980,6 +1052,8 @@ export type ResolversTypes = {
   DID: ResolverTypeWrapper<Scalars['DID']>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
+  DelEligibleInput: DelEligibleInput;
+  DeleteBlogPostInput: DeleteBlogPostInput;
   DeleteCoordinatorInput: DeleteCoordinatorInput;
   DeleteOrganisationInput: DeleteOrganisationInput;
   DeleteStudentInput: DeleteStudentInput;
@@ -989,9 +1063,12 @@ export type ResolversTypes = {
   DeletedStudent: ResolverTypeWrapper<DeletedStudent>;
   DeletedSupervisor: ResolverTypeWrapper<DeletedSupervisor>;
   Duration: ResolverTypeWrapper<Scalars['Duration']>;
-  Eligibility: ResolverTypeWrapper<Eligibility>;
+  Eligible: ResolverTypeWrapper<Eligible>;
   EligibleInput: EligibleInput;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>;
+  FileDir: FileDir;
+  FileInput: FileInput;
+  FileUpdateInput: FileUpdateInput;
   GUID: ResolverTypeWrapper<Scalars['GUID']>;
   Gender: Gender;
   HSL: ResolverTypeWrapper<Scalars['HSL']>;
@@ -1043,13 +1120,14 @@ export type ResolversTypes = {
   RegisteredOrganisation: ResolverTypeWrapper<RegisteredOrganisation>;
   RegisteredStudent: ResolverTypeWrapper<RegisteredStudent>;
   RegisteredSupervisor: ResolverTypeWrapper<RegisteredSupervisor>;
+  ReturnBlogPost: ResolverTypeWrapper<ReturnBlogPost>;
+  ReturnRegisterEligible: ResolverTypeWrapper<ReturnRegisterEligible>;
   ReturnRegisteredAdmin: ResolverTypeWrapper<ReturnRegisteredAdmin>;
-  ReturnRegisteredBlogPost: ResolverTypeWrapper<ReturnRegisteredBlogPost>;
   ReturnRegisteredCoordinator: ResolverTypeWrapper<ReturnRegisteredCoordinator>;
-  ReturnRegisteredEligible: ResolverTypeWrapper<ReturnRegisteredEligible>;
   ReturnRegisteredOrganisation: ResolverTypeWrapper<ReturnRegisteredOrganisation>;
   ReturnRegisteredStudent: ResolverTypeWrapper<ReturnRegisteredStudent>;
   ReturnRegisteredSupervisor: ResolverTypeWrapper<ReturnRegisteredSupervisor>;
+  ReturnedEligible: ResolverTypeWrapper<ReturnedEligible>;
   RoutingNumber: ResolverTypeWrapper<Scalars['RoutingNumber']>;
   SafeInt: ResolverTypeWrapper<Scalars['SafeInt']>;
   Sector: Sector;
@@ -1067,7 +1145,9 @@ export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
   UnsignedFloat: ResolverTypeWrapper<Scalars['UnsignedFloat']>;
   UnsignedInt: ResolverTypeWrapper<Scalars['UnsignedInt']>;
+  UpdateBlogPostInput: UpdateBlogPostInput;
   UpdateCoordinatorInput: UpdateCoordinatorInput;
+  UpdateEligibleInput: UpdateEligibleInput;
   UpdateOrganisationInput: UpdateOrganisationInput;
   UpdateStudentInput: UpdateStudentInput;
   UpdateSupervisorInput: UpdateSupervisorInput;
@@ -1083,9 +1163,9 @@ export type ResolversParentTypes = {
   AccountNumber: Scalars['AccountNumber'];
   Admin: Admin;
   AdminInput: AdminInput;
-  AvatarInput: AvatarInput;
   BigInt: Scalars['BigInt'];
   Blog: Blog;
+  BlogPost: BlogPost;
   BlogPostInput: BlogPostInput;
   Boolean: Scalars['Boolean'];
   Byte: Scalars['Byte'];
@@ -1099,6 +1179,8 @@ export type ResolversParentTypes = {
   DID: Scalars['DID'];
   Date: Scalars['Date'];
   DateTime: Scalars['DateTime'];
+  DelEligibleInput: DelEligibleInput;
+  DeleteBlogPostInput: DeleteBlogPostInput;
   DeleteCoordinatorInput: DeleteCoordinatorInput;
   DeleteOrganisationInput: DeleteOrganisationInput;
   DeleteStudentInput: DeleteStudentInput;
@@ -1108,9 +1190,11 @@ export type ResolversParentTypes = {
   DeletedStudent: DeletedStudent;
   DeletedSupervisor: DeletedSupervisor;
   Duration: Scalars['Duration'];
-  Eligibility: Eligibility;
+  Eligible: Eligible;
   EligibleInput: EligibleInput;
   EmailAddress: Scalars['EmailAddress'];
+  FileInput: FileInput;
+  FileUpdateInput: FileUpdateInput;
   GUID: Scalars['GUID'];
   HSL: Scalars['HSL'];
   HSLA: Scalars['HSLA'];
@@ -1160,13 +1244,14 @@ export type ResolversParentTypes = {
   RegisteredOrganisation: RegisteredOrganisation;
   RegisteredStudent: RegisteredStudent;
   RegisteredSupervisor: RegisteredSupervisor;
+  ReturnBlogPost: ReturnBlogPost;
+  ReturnRegisterEligible: ReturnRegisterEligible;
   ReturnRegisteredAdmin: ReturnRegisteredAdmin;
-  ReturnRegisteredBlogPost: ReturnRegisteredBlogPost;
   ReturnRegisteredCoordinator: ReturnRegisteredCoordinator;
-  ReturnRegisteredEligible: ReturnRegisteredEligible;
   ReturnRegisteredOrganisation: ReturnRegisteredOrganisation;
   ReturnRegisteredStudent: ReturnRegisteredStudent;
   ReturnRegisteredSupervisor: ReturnRegisteredSupervisor;
+  ReturnedEligible: ReturnedEligible;
   RoutingNumber: Scalars['RoutingNumber'];
   SafeInt: Scalars['SafeInt'];
   String: Scalars['String'];
@@ -1183,7 +1268,9 @@ export type ResolversParentTypes = {
   UUID: Scalars['UUID'];
   UnsignedFloat: Scalars['UnsignedFloat'];
   UnsignedInt: Scalars['UnsignedInt'];
+  UpdateBlogPostInput: UpdateBlogPostInput;
   UpdateCoordinatorInput: UpdateCoordinatorInput;
+  UpdateEligibleInput: UpdateEligibleInput;
   UpdateOrganisationInput: UpdateOrganisationInput;
   UpdateStudentInput: UpdateStudentInput;
   UpdateSupervisorInput: UpdateSupervisorInput;
@@ -1217,7 +1304,15 @@ export type BlogResolvers<ContextType = IContext, ParentType extends ResolversPa
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  image?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type BlogPostResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['BlogPost'] = ResolversParentTypes['BlogPost']> = {
+  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1319,7 +1414,7 @@ export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'Duration';
 }
 
-export type EligibilityResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Eligibility'] = ResolversParentTypes['Eligibility']> = {
+export type EligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Eligible'] = ResolversParentTypes['Eligible']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1433,25 +1528,28 @@ export interface MacScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes[
 
 export type MutationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   admin?: Resolver<Maybe<ResolversTypes['ReturnRegisteredAdmin']>, ParentType, ContextType, RequireFields<MutationAdminArgs, 'registerInput'>>;
-  blogPost?: Resolver<Maybe<ResolversTypes['ReturnRegisteredBlogPost']>, ParentType, ContextType, RequireFields<MutationBlogPostArgs, 'registerInput'>>;
+  blogPost?: Resolver<Maybe<ResolversTypes['ReturnBlogPost']>, ParentType, ContextType, RequireFields<MutationBlogPostArgs, 'registerInput'>>;
   changePassword?: Resolver<Maybe<ResolversTypes['ChangePswResponse']>, ParentType, ContextType, RequireFields<MutationChangePasswordArgs, 'input'>>;
   coordinator?: Resolver<Maybe<ResolversTypes['ReturnRegisteredCoordinator']>, ParentType, ContextType, RequireFields<MutationCoordinatorArgs, 'registerInput'>>;
-  deleteAvatar?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationDeleteAvatarArgs, 'deleteInput'>>;
+  deleteBlogPost?: Resolver<Maybe<ResolversTypes['ReturnBlogPost']>, ParentType, ContextType, RequireFields<MutationDeleteBlogPostArgs, 'input'>>;
   deleteCoordinator?: Resolver<Maybe<ResolversTypes['DeletedCoordinator']>, ParentType, ContextType, RequireFields<MutationDeleteCoordinatorArgs, 'emailInput'>>;
+  deleteEligible?: Resolver<Maybe<ResolversTypes['ReturnRegisterEligible']>, ParentType, ContextType, RequireFields<MutationDeleteEligibleArgs, 'deleteInput'>>;
+  deleteFile?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationDeleteFileArgs, 'deleteInput'>>;
   deleteOrganisation?: Resolver<Maybe<ResolversTypes['DeletedOrganisation']>, ParentType, ContextType, RequireFields<MutationDeleteOrganisationArgs, 'emailInput'>>;
   deleteStudent?: Resolver<Maybe<ResolversTypes['DeletedStudent']>, ParentType, ContextType, RequireFields<MutationDeleteStudentArgs, 'emailInput'>>;
   deleteSupervisor?: Resolver<Maybe<ResolversTypes['DeletedSupervisor']>, ParentType, ContextType, RequireFields<MutationDeleteSupervisorArgs, 'emailInput'>>;
-  eligible?: Resolver<Maybe<ResolversTypes['ReturnRegisteredEligible']>, ParentType, ContextType, RequireFields<MutationEligibleArgs, 'registerInput'>>;
+  eligible?: Resolver<Maybe<ResolversTypes['ReturnRegisterEligible']>, ParentType, ContextType, RequireFields<MutationEligibleArgs, 'registerInput'>>;
   organisation?: Resolver<Maybe<ResolversTypes['ReturnRegisteredOrganisation']>, ParentType, ContextType, RequireFields<MutationOrganisationArgs, 'registerInput'>>;
   student?: Resolver<Maybe<ResolversTypes['ReturnRegisteredStudent']>, ParentType, ContextType, RequireFields<MutationStudentArgs, 'registerInput'>>;
   supervisor?: Resolver<Maybe<ResolversTypes['ReturnRegisteredSupervisor']>, ParentType, ContextType, RequireFields<MutationSupervisorArgs, 'registerInput'>>;
-  updateAvatar?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationUpdateAvatarArgs, 'updateInput'>>;
+  updateBlogPost?: Resolver<Maybe<ResolversTypes['ReturnBlogPost']>, ParentType, ContextType, RequireFields<MutationUpdateBlogPostArgs, 'input'>>;
   updateCoordinator?: Resolver<Maybe<ResolversTypes['ReturnRegisteredCoordinator']>, ParentType, ContextType, RequireFields<MutationUpdateCoordinatorArgs, 'updateInput'>>;
+  updateEligible?: Resolver<Maybe<ResolversTypes['ReturnRegisterEligible']>, ParentType, ContextType, RequireFields<MutationUpdateEligibleArgs, 'updateInput'>>;
+  updateFile?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationUpdateFileArgs, 'updateInput'>>;
   updateOrganisation?: Resolver<Maybe<ResolversTypes['ReturnRegisteredOrganisation']>, ParentType, ContextType, RequireFields<MutationUpdateOrganisationArgs, 'updateInput'>>;
   updateStudent?: Resolver<Maybe<ResolversTypes['ReturnRegisteredStudent']>, ParentType, ContextType, RequireFields<MutationUpdateStudentArgs, 'updateInput'>>;
   updateSupervisor?: Resolver<Maybe<ResolversTypes['ReturnRegisteredSupervisor']>, ParentType, ContextType, RequireFields<MutationUpdateSupervisorArgs, 'updateInput'>>;
-  uploadAvatar?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationUploadAvatarArgs, 'file'>>;
-  uploadDiagram?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, Partial<MutationUploadDiagramArgs>>;
+  uploadFile?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationUploadFileArgs, 'input'>>;
 };
 
 export interface NegativeFloatScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['NegativeFloat'], any> {
@@ -1527,15 +1625,15 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   blogs?: Resolver<Maybe<Array<Maybe<ResolversTypes['Blog']>>>, ParentType, ContextType>;
   coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType, RequireFields<QueryCoordinatorArgs, 'id'>>;
   coordinators?: Resolver<Maybe<Array<Maybe<ResolversTypes['Coordinator']>>>, ParentType, ContextType>;
-  eligible?: Resolver<Maybe<ResolversTypes['Eligibility']>, ParentType, ContextType, RequireFields<QueryEligibleArgs, 'id'>>;
-  eligibles?: Resolver<Maybe<Array<Maybe<ResolversTypes['Eligibility']>>>, ParentType, ContextType>;
+  eligible?: Resolver<Maybe<ResolversTypes['Eligible']>, ParentType, ContextType, RequireFields<QueryEligibleArgs, 'id'>>;
+  eligibles?: Resolver<Maybe<Array<Maybe<ResolversTypes['Eligible']>>>, ParentType, ContextType>;
   logbook?: Resolver<Maybe<ResolversTypes['Logbook']>, ParentType, ContextType, RequireFields<QueryLogbookArgs, 'id'>>;
   logbooks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Logbook']>>>, ParentType, ContextType>;
-  loginAdmin?: Resolver<Maybe<ResolversTypes['ReturnRegisteredAdmin']>, ParentType, ContextType, Partial<QueryLoginAdminArgs>>;
-  loginCoordinator?: Resolver<Maybe<ResolversTypes['ReturnRegisteredCoordinator']>, ParentType, ContextType, Partial<QueryLoginCoordinatorArgs>>;
-  loginOrganisation?: Resolver<Maybe<ResolversTypes['ReturnRegisteredOrganisation']>, ParentType, ContextType, Partial<QueryLoginOrganisationArgs>>;
-  loginStudent?: Resolver<Maybe<ResolversTypes['ReturnRegisteredStudent']>, ParentType, ContextType, Partial<QueryLoginStudentArgs>>;
-  loginSupervisor?: Resolver<Maybe<ResolversTypes['ReturnRegisteredSupervisor']>, ParentType, ContextType, Partial<QueryLoginSupervisorArgs>>;
+  loginAdmin?: Resolver<Maybe<ResolversTypes['ReturnRegisteredAdmin']>, ParentType, ContextType, RequireFields<QueryLoginAdminArgs, 'loginInput'>>;
+  loginCoordinator?: Resolver<Maybe<ResolversTypes['ReturnRegisteredCoordinator']>, ParentType, ContextType, RequireFields<QueryLoginCoordinatorArgs, 'loginInput'>>;
+  loginOrganisation?: Resolver<Maybe<ResolversTypes['ReturnRegisteredOrganisation']>, ParentType, ContextType, RequireFields<QueryLoginOrganisationArgs, 'loginInput'>>;
+  loginStudent?: Resolver<Maybe<ResolversTypes['ReturnRegisteredStudent']>, ParentType, ContextType, RequireFields<QueryLoginStudentArgs, 'loginInput'>>;
+  loginSupervisor?: Resolver<Maybe<ResolversTypes['ReturnRegisteredSupervisor']>, ParentType, ContextType, RequireFields<QueryLoginSupervisorArgs, 'loginInput'>>;
   organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType, RequireFields<QueryOrganisationArgs, 'id'>>;
   organisations?: Resolver<Maybe<Array<Maybe<ResolversTypes['Organisation']>>>, ParentType, ContextType>;
   student?: Resolver<Maybe<ResolversTypes['Student']>, ParentType, ContextType, RequireFields<QueryStudentArgs, 'id'>>;
@@ -1628,18 +1726,24 @@ export type RegisteredSupervisorResolvers<ContextType = IContext, ParentType ext
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ReturnBlogPostResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnBlogPost'] = ResolversParentTypes['ReturnBlogPost']> = {
+  blogpost?: Resolver<Maybe<ResolversTypes['BlogPost']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ReturnRegisterEligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisterEligible'] = ResolversParentTypes['ReturnRegisterEligible']> = {
+  eligible?: Resolver<Maybe<ResolversTypes['ReturnedEligible']>, ParentType, ContextType>;
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ReturnRegisteredAdminResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredAdmin'] = ResolversParentTypes['ReturnRegisteredAdmin']> = {
   accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   admin?: Resolver<ResolversTypes['RegisteredAdmin'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ReturnRegisteredBlogPostResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredBlogPost'] = ResolversParentTypes['ReturnRegisteredBlogPost']> = {
-  content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  image?: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
-  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1649,12 +1753,6 @@ export type ReturnRegisteredCoordinatorResolvers<ContextType = IContext, ParentT
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ReturnRegisteredEligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredEligible'] = ResolversParentTypes['ReturnRegisteredEligible']> = {
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  statusCode?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1682,6 +1780,16 @@ export type ReturnRegisteredSupervisorResolvers<ContextType = IContext, ParentTy
   refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   supervisor?: Resolver<ResolversTypes['RegisteredSupervisor'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ReturnedEligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnedEligible'] = ResolversParentTypes['ReturnedEligible']> = {
+  department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  institute?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  level?: Resolver<Maybe<ResolversTypes['Level']>, ParentType, ContextType>;
+  matricNo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  supervisor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1798,6 +1906,7 @@ export type Resolvers<ContextType = IContext> = {
   Admin?: AdminResolvers<ContextType>;
   BigInt?: GraphQLScalarType;
   Blog?: BlogResolvers<ContextType>;
+  BlogPost?: BlogPostResolvers<ContextType>;
   Byte?: GraphQLScalarType;
   ChangePswResponse?: ChangePswResponseResolvers<ContextType>;
   Coordinator?: CoordinatorResolvers<ContextType>;
@@ -1812,7 +1921,7 @@ export type Resolvers<ContextType = IContext> = {
   DeletedStudent?: DeletedStudentResolvers<ContextType>;
   DeletedSupervisor?: DeletedSupervisorResolvers<ContextType>;
   Duration?: GraphQLScalarType;
-  Eligibility?: EligibilityResolvers<ContextType>;
+  Eligible?: EligibleResolvers<ContextType>;
   EmailAddress?: GraphQLScalarType;
   GUID?: GraphQLScalarType;
   HSL?: GraphQLScalarType;
@@ -1859,13 +1968,14 @@ export type Resolvers<ContextType = IContext> = {
   RegisteredOrganisation?: RegisteredOrganisationResolvers<ContextType>;
   RegisteredStudent?: RegisteredStudentResolvers<ContextType>;
   RegisteredSupervisor?: RegisteredSupervisorResolvers<ContextType>;
+  ReturnBlogPost?: ReturnBlogPostResolvers<ContextType>;
+  ReturnRegisterEligible?: ReturnRegisterEligibleResolvers<ContextType>;
   ReturnRegisteredAdmin?: ReturnRegisteredAdminResolvers<ContextType>;
-  ReturnRegisteredBlogPost?: ReturnRegisteredBlogPostResolvers<ContextType>;
   ReturnRegisteredCoordinator?: ReturnRegisteredCoordinatorResolvers<ContextType>;
-  ReturnRegisteredEligible?: ReturnRegisteredEligibleResolvers<ContextType>;
   ReturnRegisteredOrganisation?: ReturnRegisteredOrganisationResolvers<ContextType>;
   ReturnRegisteredStudent?: ReturnRegisteredStudentResolvers<ContextType>;
   ReturnRegisteredSupervisor?: ReturnRegisteredSupervisorResolvers<ContextType>;
+  ReturnedEligible?: ReturnedEligibleResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SafeInt?: GraphQLScalarType;
   Student?: StudentResolvers<ContextType>;

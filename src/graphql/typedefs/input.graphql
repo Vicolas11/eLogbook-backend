@@ -1,14 +1,21 @@
+# Login >>>>>>>>>>>>>>>>>>>>>>>>>>>>
 input LoginInput {
   email: String!
   password: String!
 }
-
-input AvatarInput {
+# Upload File >>>>>>>>>>>>>>>>>>>>>>
+input FileInput {
   file: Upload
-  id: ID!
+  type: FileDir!
 }
 
-# Change Password >>>>>>>>>>>>>>>>
+input FileUpdateInput {
+  file: Upload
+  id: ID!
+  type: FileDir!
+}
+
+# Change Password >>>>>>>>>>>>>>>>>>
 input ChangePswInput {
   id: ID!
   password: String!
@@ -16,7 +23,7 @@ input ChangePswInput {
   new_password: String!
 }
 
-# Student >>>>>>>>>>>>>>>>>>>>>>>>
+# Student >>>>>>>>>>>>>>>>>>>>>>>>>>>
 input StudentInput {
   firstName: String!
   lastName: String!
@@ -137,16 +144,40 @@ input AdminInput {
   avatar: String
 }
 
+# BlogPost >>>>>>>>>>>>>>>>>>
 input BlogPostInput {
   title: String!
   content: String!
   image: String!
 }
 
+input UpdateBlogPostInput {
+  id: ID!
+  title: String!
+  content: String!
+  image: String!
+}
+
+input DeleteBlogPostInput {
+  id: ID!
+}
+
+# Eligiblity >>>>>>>>>>>>>>>>>
 input EligibleInput {
   institute: String!
   department: String!
   level: Level!
   supervisor: String!
   matricNo: String!
+}
+
+input UpdateEligibleInput {
+  id: ID!
+  level: Level!
+  supervisor: String!
+  matricNo: String!
+}
+
+input DelEligibleInput {
+  id: ID!
 }

@@ -1,4 +1,4 @@
-import { DeleteCoordinatorInputSchema, RegisterCoordinatorInputSchema, UpdateCoordinatorInputSchema } from "../../../joi/coordinator.joi";
+import { DelCoordinatorInputSchema, CoordinatorInputSchema, UpdateCoordinatorInputSchema } from "../../../joi/coordinator.joi";
 import { DeletedCoordinator, MutationResolvers, ReturnRegisteredCoordinator } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
@@ -9,7 +9,7 @@ const coordinatorMutations: MutationResolvers = {
   // CREATE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   coordinator: async (_, { registerInput: input }, { prisma }) => {
     // Validate Input field
-    const validate = RegisterCoordinatorInputSchema.validate(input);
+    const validate = CoordinatorInputSchema.validate(input);
     const { error } = validate;
 
     if (error)
@@ -117,7 +117,7 @@ const coordinatorMutations: MutationResolvers = {
     const { email } = emailInput;
 
     // Validate Input field
-    const validate = DeleteCoordinatorInputSchema.validate(emailInput);
+    const validate = DelCoordinatorInputSchema.validate(emailInput);
     const { error } = validate;
 
     if (error)

@@ -20,17 +20,17 @@ type Query {
   blogs: [Blog]
 
   # ELIGIBLE
-  eligible(id: ID!): Eligibility
-  eligibles: [Eligibility]
+  eligible(id: ID!): Eligible
+  eligibles: [Eligible]
 
   # LOGBOOK
   logbook(id: ID!): Logbook
   logbooks: [Logbook]
 
   # LOGIN
-  loginStudent(loginInput: LoginInput): ReturnRegisteredStudent
-  loginSupervisor(loginInput: LoginInput): ReturnRegisteredSupervisor
-  loginCoordinator(loginInput: LoginInput): ReturnRegisteredCoordinator
-  loginOrganisation(loginInput: LoginInput): ReturnRegisteredOrganisation
-  loginAdmin(loginInput: LoginInput): ReturnRegisteredAdmin
+  loginStudent(loginInput: LoginInput!): ReturnRegisteredStudent
+  loginSupervisor(loginInput: LoginInput!): ReturnRegisteredSupervisor
+  loginCoordinator(loginInput: LoginInput!): ReturnRegisteredCoordinator
+  loginOrganisation(loginInput: LoginInput!): ReturnRegisteredOrganisation
+  loginAdmin(loginInput: LoginInput!): ReturnRegisteredAdmin
 }

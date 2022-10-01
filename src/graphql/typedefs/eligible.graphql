@@ -1,0 +1,24 @@
+type Eligible {
+  id: ID!
+  institute: String
+  department: String
+  level: Level
+  supervisor: String
+  matricNo: String
+  createdAt: DateTime
+}
+
+type ReturnedEligible {
+  id: ID!
+  institute: String
+  department: String
+  level: Level
+  supervisor: String
+  matricNo: String
+}
+
+type ReturnRegisterEligible {
+  message: String
+  status: Int
+  eligible: ReturnedEligible
+}

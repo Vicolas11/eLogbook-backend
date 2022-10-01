@@ -1,10 +1,8 @@
-import Joi, { number } from "joi";
+import Joi from "joi";
 
-const { object, string } = Joi.types();
-
-export const RegisterOrganisationInputSchema = object.keys({
-  name: string.min(5).max(150).required(),
-  sector: string.valid(
+export const OrganisationInputSchema = Joi.object({
+  name: Joi.string().min(5).max(150).required(),
+  sector: Joi.string().valid(
     "ICT",
     "Healthcare",
     "Agriculture",
@@ -27,18 +25,18 @@ export const RegisterOrganisationInputSchema = object.keys({
     "Oil",
     "Others"
   ).required(),
-  phone: string.min(5).max(18),
-  address: string.min(10).required(),
-  employees: number(),
-  email: string.min(5).email().required(),
-  password: string.min(6).required(),
-  logo: string.length(38).regex(/[.jpg]$/),
+  phone: Joi.string().min(5).max(18),
+  address: Joi.string().min(10).required(),
+  employees: Joi.number(),
+  email: Joi.string().min(5).email().required(),
+  password: Joi.string().min(6).required(),
+  logo: Joi.string().min(30).regex(/[.jpg]$/).required(),
 });
 
-export const UpdateOrganisationInputSchema = object.keys({
-  email: string.min(5).email().required(),
-  name: string.min(5).max(150).required(),
-  sector: string.valid(
+export const UpdateOrganisationInputSchema = Joi.object({
+  email: Joi.string().min(5).email().required(),
+  name: Joi.string().min(5).max(150).required(),
+  sector: Joi.string().valid(
     "ICT",
     "Healthcare",
     "Agriculture",
@@ -61,12 +59,12 @@ export const UpdateOrganisationInputSchema = object.keys({
     "Oil",
     "Others"
   ).required(),
-  phone: string.min(5).max(18),
-  address: string.min(10).required(),
-  employees: number(),
-  logo: string.length(38).regex(/[.jpg]$/),
+  phone: Joi.string().min(5).max(18),
+  address: Joi.string().min(10).required(),
+  employees: Joi.number(),
+  logo: Joi.string().min(30).regex(/[.jpg]$/).required(),
 });
 
-export const DeleteOrganisationInputSchema = object.keys({
-  email: string.min(5).email().required(),
+export const DelOrganisationInputSchema = Joi.object({
+  email: Joi.string().min(5).email().required(),
 });

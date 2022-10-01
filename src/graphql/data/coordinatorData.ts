@@ -2,7 +2,6 @@ import { AuthenticationError } from "apollo-server-express";
 import { Coordinator } from "@prisma/client";
 import { prisma } from "../context";
 
-// COORDINATOR
 export const getAllCoordinators = async (): Promise<Coordinator[]> => {
   const coordinators = await prisma.coordinator.findMany();
   return coordinators;

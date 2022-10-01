@@ -1,4 +1,4 @@
-import { DeleteStudentInputSchema, RegisterStudentInputSchema, UpdateStudentInputSchema } from "../../../joi/student.joi";
+import { DelStudentInputSchema, StudentInputSchema, UpdateStudentInputSchema } from "../../../joi/student.joi";
 import { DeletedStudent, MutationResolvers, ReturnRegisteredStudent } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
@@ -9,7 +9,7 @@ const studentMutations: MutationResolvers = {
   // CREATE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   student: async (_, { registerInput: input }, { prisma }) => {
     // Validate Input field
-    const validate = RegisterStudentInputSchema.validate(input);
+    const validate = StudentInputSchema.validate(input);
     const { error } = validate;
 
     if (error)
@@ -125,7 +125,7 @@ const studentMutations: MutationResolvers = {
     const { email } = emailInput;
 
     // Validate Input field
-    const validate = DeleteStudentInputSchema.validate(emailInput);
+    const validate = DelStudentInputSchema.validate(emailInput);
     const { error } = validate;
 
     if (error)

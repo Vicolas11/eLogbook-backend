@@ -4,6 +4,8 @@ import { IContext } from "../interfaces/context.interface";
 import { getSupervisorByIDs } from "./data/supervisorData";
 import { ContextFunction } from "apollo-server-core";
 import { getStudentByIDs } from "./data/studentData";
+import { getBlogPostByIDs } from "./data/blogpost";
+import { getEligibleByIDs } from "./data/eligible";
 import { PrismaClient } from "@prisma/client";
 import DataLoader from "dataloader";
 
@@ -53,6 +55,26 @@ const organisationLoader = () => {
   };
 };
 
+const blogPostLoader = () => {
+  const loader = new DataLoader(async (ids) => {
+    return getBlogPostByIDs(ids as string[]);
+  });
+
+  return {
+    one: async (id: string) => loader.load(id),
+  };
+};
+
+const eligibleLoader = () => {
+  const loader = new DataLoader(async (ids) => {
+    return getEligibleByIDs(ids as string[]);
+  });
+
+  return {
+    one: async (id: string) => loader.load(id),
+  };
+};
+
 const context: ContextFunction<IContext> = async () => {
   return {
     loaders: {
@@ -60,6 +82,8 @@ const context: ContextFunction<IContext> = async () => {
       supervisor: supervisorLoader(),
       coordinator: coordinatorLoader(),
       organisation: organisationLoader(),
+      blogPost: blogPostLoader(),
+      eligible: eligibleLoader(),
     },
     prisma,
   };

@@ -1,34 +1,32 @@
 import Joi from "joi";
 
-const { object, string } = Joi.types();
-
-export const RegisterStudentInputSchema = object.keys({
-  firstName: string.min(3).max(50).required(),
-  lastName: string.min(3).max(50).required(),
-  matricNo: string.min(3).max(50).required(),
-  phone: string.min(5),
-  address: string.min(10),
-  institute: string.required(),
-  department: string.required(),
-  level: string.valid("ND1", "NC2", "L3", "L4"),
-  gender: string.valid("Male", "Female"),
-  place: string.required(),
-  email: string.min(5).email().required(),
-  password: string.min(6).required(),
-  avatar: string.length(38).regex(/[.jpg]$/).required(),
+export const StudentInputSchema = Joi.object({
+  firstName: Joi.string().min(3).max(50).required(),
+  lastName: Joi.string().min(3).max(50).required(),
+  matricNo: Joi.string().min(3).max(50).required(),
+  phone: Joi.string().min(5),
+  address: Joi.string().min(10),
+  institute: Joi.string().required(),
+  department: Joi.string().required(),
+  level: Joi.string().valid("ND1", "NC2", "L3", "L4"),
+  gender: Joi.string().valid("Male", "Female"),
+  place: Joi.string().required(),
+  email: Joi.string().min(5).email().required(),
+  password: Joi.string().min(6).required(),
+  avatar: Joi.string().min(30).regex(/[.jpg]$/).required(),
 });
 
-export const UpdateStudentInputSchema = object.keys({
-  firstName: string.min(3).max(50).required(),
-  lastName: string.min(3).max(50).required(),
-  phone: string.min(5),
-  email: string.min(5).email().required(),
-  address: string.min(10),
-  level: string.valid("ND1", "NC2", "L3", "L4"),
-  gender: string.valid("Male", "Female"),
-  avatar: string.length(38).regex(/[.jpg]$/).required(),
+export const UpdateStudentInputSchema = Joi.object({
+  firstName: Joi.string().min(3).max(50).required(),
+  lastName: Joi.string().min(3).max(50).required(),
+  phone: Joi.string().min(5),
+  email: Joi.string().min(5).email().required(),
+  address: Joi.string().min(10),
+  level: Joi.string().valid("ND1", "NC2", "L3", "L4"),
+  gender: Joi.string().valid("Male", "Female"),
+  avatar: Joi.string().min(30).regex(/[.jpg]$/).required(),
 });
 
-export const DeleteStudentInputSchema = object.keys({
-  email: string.min(5).email().required(),
+export const DelStudentInputSchema = Joi.object({
+  email: Joi.string().min(5).email().required(),
 });

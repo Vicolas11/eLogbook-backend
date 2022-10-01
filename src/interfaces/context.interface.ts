@@ -1,5 +1,7 @@
 import {
+  BlogPost,
   Coordinator,
+  Eligible,
   Organisation,
   PrismaClient,
   Student,
@@ -19,6 +21,12 @@ export interface IContext {
     };
     organisation: {
       one: (id: string) => Promise<Organisation>;
+    };
+    blogPost: {
+      one: (id: string) => Promise<BlogPost>;
+    };
+    eligible: {
+      one: (id: string) => Promise<Eligible>;
     };
   };
   prisma: PrismaClient;

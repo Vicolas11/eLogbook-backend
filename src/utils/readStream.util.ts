@@ -11,7 +11,7 @@ import fileRemover from "./fileremove.util";
 config();
 
 const readStreamFile = async (args: IReadStream): Promise<string> => {
-  const { file, action, avatar, oldImgURL } = args;
+  const { file, action, subpath, oldImgURL } = args;
   const { port, dev, url } = envConfig;
   const { createReadStream, mimetype: t } = await file;
 
@@ -32,7 +32,6 @@ const readStreamFile = async (args: IReadStream): Promise<string> => {
 
   const stream = createReadStream();
   const unqueFilename = generateUniqueFilename(true);
-  const subpath = avatar ? "avatar" : "diagram";
   const pathname = join(
     __dirname,
     `../../public/upload/${subpath}/${unqueFilename}`
@@ -40,8 +39,8 @@ const readStreamFile = async (args: IReadStream): Promise<string> => {
   let URL: string = "";
   // DELETE AND UPDATE USER IMAGE
   if (action === "update" && oldImgURL !== "") {
-    const imgURL = oldImgURL.split("/");
-    const lastIdx = imgURL.length - 1;
+    const imgURL = oldImgURL?.split("/");
+    const lastIdx = imgURL?.length - 1;
     const filepath = imgURL[lastIdx];
     const isRemoved = await fileRemover({filepath, subpath});
     // If file is successfully deleted, then update!

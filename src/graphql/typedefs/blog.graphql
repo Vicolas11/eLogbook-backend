@@ -2,13 +2,19 @@ type Blog {
   id: ID!
   title: String
   content: String
-  image: URL
+  image: String
   createdAt: DateTime
 }
 
-type ReturnRegisteredBlogPost {
+type BlogPost {
   id: ID!
   title: String
   content: String
-  image: URL
+  image: String
+}
+
+type ReturnBlogPost {
+  status: Int
+  message: String
+  blogpost: BlogPost
 }

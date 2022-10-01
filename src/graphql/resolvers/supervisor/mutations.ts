@@ -1,4 +1,4 @@
-import { DeleteSupervisorInputSchema, RegisterSupervisorInputSchema, UpdateSupervisorInputSchema } from "../../../joi/supervisor.joi";
+import { DelSupervisorInputSchema, SupervisorInputSchema, UpdateSupervisorInputSchema } from "../../../joi/supervisor.joi";
 import { DeletedSupervisor, MutationResolvers, ReturnRegisteredSupervisor } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
@@ -9,7 +9,7 @@ const supervisorMutations: MutationResolvers = {
   // CREATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   supervisor: async (_, { registerInput: input }, { prisma }) => {
     // Validate Input field
-    const validate = RegisterSupervisorInputSchema.validate(input);
+    const validate = SupervisorInputSchema.validate(input);
     const { error } = validate;
 
     if (error)
@@ -117,7 +117,7 @@ const supervisorMutations: MutationResolvers = {
     const { email } = emailInput;
 
     // Validate Input field
-    const validate = DeleteSupervisorInputSchema.validate(emailInput);
+    const validate = DelSupervisorInputSchema.validate(emailInput);
     const { error } = validate;
 
     if (error)

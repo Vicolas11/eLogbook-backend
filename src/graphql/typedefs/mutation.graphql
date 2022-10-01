@@ -1,11 +1,8 @@
 type Mutation {
-  # Upload User Avatar|Passport >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  uploadAvatar(file: Upload!): UploadResponse
-  updateAvatar(updateInput: AvatarInput!): UploadResponse
-  deleteAvatar(deleteInput: ID!): UploadResponse
-
-  # Upload Student Logbook Diagram >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  uploadDiagram(file: Upload): UploadResponse
+  # Upload File >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  uploadFile(input: FileInput!): UploadResponse
+  updateFile(updateInput: FileUpdateInput!): UploadResponse
+  deleteFile(deleteInput: ID!): UploadResponse
 
   # Change Password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   changePassword(input: ChangePswInput!) : ChangePswResponse
@@ -33,9 +30,13 @@ type Mutation {
   # Admin >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   admin(registerInput: AdminInput!): ReturnRegisteredAdmin
 
-  # Create BlogPost
-  blogPost(registerInput: BlogPostInput!): ReturnRegisteredBlogPost
+  # Create BlogPost >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  blogPost(registerInput: BlogPostInput!): ReturnBlogPost
+  updateBlogPost(input: UpdateBlogPostInput!): ReturnBlogPost
+  deleteBlogPost(input: DeleteBlogPostInput!): ReturnBlogPost
 
-  # Add Elibility Student
-  eligible(registerInput: EligibleInput!): ReturnRegisteredEligible
+  # Add Elibility Student >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  eligible(registerInput: EligibleInput!): ReturnRegisterEligible
+  updateEligible(updateInput: UpdateEligibleInput!): ReturnRegisterEligible
+  deleteEligible(deleteInput: DelEligibleInput!): ReturnRegisterEligible
 }

@@ -155,14 +155,14 @@ model Admin {
 
 model BlogPost {
   id        String    @id @default(uuid())
-  title     String
+  title     String    @unique
   content   String
   image     String
   createdAt DateTime? @default(now())
   updateAt  DateTime? @updatedAt
 }
 
-model Eligibility {
+model Eligible {
   id         String    @id @default(uuid())
   institute  String
   department String

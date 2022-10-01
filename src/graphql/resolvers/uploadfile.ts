@@ -1,21 +1,34 @@
+import { FileInputSchema, FileUpdateInputSchema } from "../../joi/uploadfile.joi";
+import { UserInputError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, UploadResponse } from "../generated";
 import readStreamFile from "../../utils/readStream.util";
 import deleteFile from "../../utils/deletefile.utils";
-import { UserInputError } from "apollo-server-express";
 
 const uploadFileMutation: MutationResolvers = {
-  // Upload Files and Return Image URL
-  uploadAvatar: async (_, { file }, _ctx) => {
+  // CREATE UPDATE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  uploadFile: async (_, { input }, _ctx) => {
+    const { file, type } = input;
 
-    if (!file) {
+    // Validate Input field
+    const validate = FileInputSchema.validate(input);
+    const { error } = validate;
+
+    if (error)
+      throw new ValidationError(
+        (error?.details?.map((err) => err.message) as unknown as string) ||
+          "Validation Error!"
+      );
+
+    const getFile = await input.file;
+    if (!getFile) {
       throw new UserInputError("Uploaded an empty file!");
-    }  
+    }
 
     const imageURL = await readStreamFile({
       file: file,
       oldImgURL: "",
       action: "create",
-      avatar: true,
+      subpath: type,
     });
 
     return {
@@ -25,20 +38,31 @@ const uploadFileMutation: MutationResolvers = {
     } as UploadResponse;
   },
 
-  updateAvatar: async (_, { updateInput }, { prisma }) => {
-    const { file, id } = updateInput;
+  // UPDATE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  updateFile: async (_, { updateInput: input }, { prisma }) => {
+    const { file, id, type } = input;
+
+    // Validate Input field
+    const validate = FileUpdateInputSchema.validate(input);
+    const { error } = validate;
+
+    if (error)
+      throw new ValidationError(
+        (error?.details?.map((err) => err.message) as unknown as string) ||
+          "Validation Error!"
+      );
+
     const user = await prisma.student.findUnique({ where: { id: id } });
     const getFile = await file;
-    
     if (!getFile) {
       throw new UserInputError("Uploaded an empty file!");
-    }   
+    }
 
     const imageURL = await readStreamFile({
       file: file,
       oldImgURL: user?.avatar || "",
       action: "update",
-      avatar: true,
+      subpath: type,
     });
 
     return {
@@ -48,32 +72,19 @@ const uploadFileMutation: MutationResolvers = {
     } as UploadResponse;
   },
 
-  deleteAvatar: async (_, { deleteInput: id }, { prisma }) => {
+  // DELETE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  deleteFile: async (_, { deleteInput: id }, { prisma }) => {
     const user = await prisma.student.findUnique({ where: { id: id } });
     const isDeleted = await deleteFile(user?.avatar as string, true);
-    const message = isDeleted ? "Image successfuly deleted!" : 'Image deleting failed!';
+    const message = isDeleted
+      ? "Image successfuly deleted!"
+      : "Image deleting failed!";
     const status = isDeleted ? 200 : 500;
 
     return {
       message: message,
       imageUrl: user?.avatar,
       status: status,
-    } as UploadResponse;
-  },
-
-  // Upload Logbook Diagram
-  uploadDiagram: async (_, { file }, _ctx) => {
-    const imageURL = await readStreamFile({
-      file: file,
-      oldImgURL: "",
-      action: "create",
-      avatar: false,
-    });
-
-    return {
-      message: "Successfully Uploaded!",
-      imageUrl: imageURL,
-      status: 200,
     } as UploadResponse;
   },
 };

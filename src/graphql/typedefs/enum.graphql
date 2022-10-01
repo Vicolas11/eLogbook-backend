@@ -41,3 +41,11 @@ enum Sector {
   Oil
   Others
 }
+
+enum FileDir {
+  logo
+  chats
+  avatar
+  diagrams
+  blogposts
+}
