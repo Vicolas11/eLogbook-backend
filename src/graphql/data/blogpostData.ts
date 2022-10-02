@@ -9,7 +9,7 @@ export const getAllBlogPosts = async (): Promise<BlogPost[]> => {
 
 const getBlogPostByID = async (id: string): Promise<BlogPost | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const blogPost = await prisma.blogPost.findUnique({ where: { id: id } });
+  const blogPost = await prisma.blogPost.findUnique({ where: { id } });
   if (!blogPost) throw new AuthenticationError("BlogPost not found!");
   return blogPost;
 };

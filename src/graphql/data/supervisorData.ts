@@ -9,7 +9,7 @@ export const getAllSupervisors = async (): Promise<Supervisor[]> => {
 
 const getSupervisorByID = async (id: string): Promise<Supervisor | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const supervisor = await prisma.supervisor.findUnique({ where: { id: id } });
+  const supervisor = await prisma.supervisor.findUnique({ where: { id } });
   if (!supervisor) throw new AuthenticationError("Supervisor not found!");
   return supervisor;
 };

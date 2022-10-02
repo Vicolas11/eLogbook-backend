@@ -9,7 +9,7 @@ export const getAllCoordinators = async (): Promise<Coordinator[]> => {
 
 const getCoordinatorByID = async (id: string): Promise<Coordinator | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const coordinator = await prisma.coordinator.findUnique({ where: { id: id } });
+  const coordinator = await prisma.coordinator.findUnique({ where: { id } });
   if (!coordinator) throw new AuthenticationError("Coordinator not found!");
   return coordinator;
 };

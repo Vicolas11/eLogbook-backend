@@ -49,3 +49,11 @@ enum FileDir {
   diagrams
   blogposts
 }
+
+enum Label {
+  indigo
+  gray
+  green
+  blue
+  red
+}

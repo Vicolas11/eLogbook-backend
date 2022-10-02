@@ -9,7 +9,9 @@ export const getAllEligibles = async (): Promise<Eligible[]> => {
 
 const getEligibleByID = async (id: string): Promise<Eligible | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const eligible = await prisma.eligible.findUnique({ where: { id: id } });
+  const eligible = await prisma.eligible.findFirst({
+    where: { OR: [{ id }, { matricNo: id }] },
+  });
   if (!eligible) throw new AuthenticationError("Eligiblility not found!");
   return eligible;
 };

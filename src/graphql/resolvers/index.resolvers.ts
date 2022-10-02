@@ -8,14 +8,19 @@ import coordinatorQueries from "./coordinator/queries";
 import supervisorQueries from "./supervisor/queries";
 import blogPostMutations from "./blogpost/mutations";
 import eligibleMutations from "./eligible/mutations";
+import organisationLogin from "./login/organisation";
+import coordinatorLogin from "./login/coordinator";
 import studentMutations from "./student/mutations";
+import logbookMutations from "./logbook/mutations";
 import changePswMutation from "./changepassword";
 import blogPostQueries from "./blogpost/queries";
 import eligibleQueries from "./eligible/queries";
+import supervisorLogin from "./login/supervisor";
 import studentQueries from "./student/queries";
 import uploadFileMutation from "./uploadfile";
 import studentLogin from "./login/student";
 import { Resolvers } from "../generated";
+
 
 const resolvers: Resolvers = {
   ...scalarResolvers,
@@ -27,6 +32,9 @@ const resolvers: Resolvers = {
     ...blogPostQueries,
     ...eligibleQueries,
     ...studentLogin,
+    ...supervisorLogin,
+    ...coordinatorLogin,
+    ...organisationLogin,
   },
   Upload: GraphQLUpload,
   Mutation: {
@@ -38,6 +46,7 @@ const resolvers: Resolvers = {
     ...organisationMutations,
     ...blogPostMutations,
     ...eligibleMutations,
+    ...logbookMutations,
   },
 };
 

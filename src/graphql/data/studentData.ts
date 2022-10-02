@@ -9,7 +9,7 @@ export const getAllStudents = async (): Promise<Student[]> => {
 
 const getStudentByID = async (id: string): Promise<Student | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const student = await prisma.student.findUnique({ where: { id: id } });
+  const student = await prisma.student.findUnique({ where: { id } });
   if (!student) throw new AuthenticationError("Student not found!");
   return student;
 };

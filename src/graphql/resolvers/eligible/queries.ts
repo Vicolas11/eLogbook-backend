@@ -1,5 +1,5 @@
 import { QueryResolvers, Eligible } from "../../generated";
-import { getAllEligibles } from "../../data/eligible";
+import { getAllEligibles } from "../../data/eligibleData";
 
 const eligibleQueries: QueryResolvers = {
   eligible: async (_, { id }, { loaders }) => {

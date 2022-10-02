@@ -2,10 +2,10 @@ import { getOrganisationByIDs } from "./data/organisationData";
 import { getCoordinatorByIDs } from "./data/coordinatorData";
 import { IContext } from "../interfaces/context.interface";
 import { getSupervisorByIDs } from "./data/supervisorData";
+import { getBlogPostByIDs } from "./data/blogpostData";
+import { getEligibleByIDs } from "./data/eligibleData";
 import { ContextFunction } from "apollo-server-core";
 import { getStudentByIDs } from "./data/studentData";
-import { getBlogPostByIDs } from "./data/blogpost";
-import { getEligibleByIDs } from "./data/eligible";
 import { PrismaClient } from "@prisma/client";
 import DataLoader from "dataloader";
 

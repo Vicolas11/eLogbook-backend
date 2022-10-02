@@ -40,6 +40,14 @@ enum User {
   Organisation
 }
 
+enum Label {
+  indigo
+  gray
+  green
+  blue
+  red
+}
+
 enum Sector {
   ICT               @map("Information Technology")
   Healthcare
@@ -177,10 +185,10 @@ model Logbook {
   day         DateTime?
   title       String
   description String
-  label       String
+  label       Label     @default(indigo)
   diagram     String?
-  approved    Boolean
-  student     Student   @relation(fields: [studentId], references: [id])
+  approved    Boolean?   @default(false)
+  student     Student?  @relation(fields: [studentId], references: [id])
   createdAt   DateTime? @default(now())
-  studentId   String
+  studentId   String?
 }

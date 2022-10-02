@@ -39,4 +39,9 @@ type Mutation {
   eligible(registerInput: EligibleInput!): ReturnRegisterEligible
   updateEligible(updateInput: UpdateEligibleInput!): ReturnRegisterEligible
   deleteEligible(deleteInput: DelEligibleInput!): ReturnRegisterEligible
+
+  # Logbook >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  logbook(input: LogbookInput!) : ResponseLogbook
+  updateLogbook(input: UpdateLogbookInput!) : ResponseLogbook
+  deleteLogbook(input: DelLogbookInput!) : ResponseLogbook
 }

@@ -3,6 +3,7 @@ input LoginInput {
   email: String!
   password: String!
 }
+
 # Upload File >>>>>>>>>>>>>>>>>>>>>>
 input FileInput {
   file: Upload
@@ -180,4 +181,29 @@ input UpdateEligibleInput {
 
 input DelEligibleInput {
   id: ID!
+}
+
+#Logbook >>>>>>>>>>>>>>>>>>>>>>
+input LogbookInput {
+  day: DateTime!
+  title: String!
+  description: String!
+  label: Label!
+  diagram: String
+  email: String!
+}
+
+input UpdateLogbookInput {
+  id: ID!
+  day: DateTime!
+  title: String!
+  description: String!
+  label: Label!
+  diagram: String
+  email: String!
+}
+
+input DelLogbookInput {
+  id: ID!
+  email: String!
 }

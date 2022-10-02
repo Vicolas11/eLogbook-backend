@@ -9,7 +9,7 @@ export const getAllOrganisations = async (): Promise<Organisation[]> => {
 
 const getOrganisationByID = async (id: string): Promise<Organisation | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const organisation = await prisma.organisation.findUnique({ where: { id: id } });
+  const organisation = await prisma.organisation.findUnique({ where: { id } });
   if (!organisation) throw new AuthenticationError("Organisation not found!");
   return organisation;
 };

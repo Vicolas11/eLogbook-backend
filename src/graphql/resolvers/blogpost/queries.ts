@@ -1,5 +1,5 @@
 import { QueryResolvers, Blog } from "../../generated";
-import { getAllBlogPosts } from "../../data/blogpost";
+import { getAllBlogPosts } from "../../data/blogpostData";
 
 const blogPostQueries: QueryResolvers = {
   blog: async (_, { id }, { loaders }) => {
