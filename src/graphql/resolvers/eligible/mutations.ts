@@ -1,14 +1,23 @@
-import { DelEligibleInputSchema, EligibleInputSchema, UpdateEligibleInputSchema } from "../../../joi/eligible.joi";
+import {
+  DelEligibleInputSchema,
+  EligibleInputSchema,
+  UpdateEligibleInputSchema,
+} from "../../../joi/eligible.joi";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ReturnRegisterEligible } from "../../generated";
-import { Prisma } from "@prisma/client";
+import { Eligible, Prisma } from "@prisma/client";
 import { v4 as uuid } from "uuid";
 
 const eligibleMutations: MutationResolvers = {
-  
   // CREATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   eligible: async (_, { registerInput: input }, { prisma }) => {
-    const { matricNo, institute, department, level, supervisor } = input;
+    const {
+      matricNo,
+      level,
+      email1: supervisorEmail,
+      email2: coordinatorEmail,
+    } = input;
+
     // Validate Input field
     const validate = EligibleInputSchema.validate(input);
     const { error } = validate;
@@ -19,43 +28,97 @@ const eligibleMutations: MutationResolvers = {
           "Validation Error!"
       );
 
+    // Validate if the Coodinator Existed!
+    const coordinator = await prisma.coordinator.findUnique({
+      where: { email: coordinatorEmail },
+    });
+
+    if (!coordinator)
+      throw new AuthenticationError("Assigned Coordinator doesn't exist!");
+
+    // Validate if the Supervisor Existed!
+    const supervisor = await prisma.supervisor.findUnique({
+      where: { email: supervisorEmail },
+    });
+
+    if (!supervisor)
+      throw new AuthenticationError("Assigned Supervisor doesn't exist!");
+
+    const institute = coordinator.institute;
+    const department = coordinator.department;
+
     // Get All the Matric Numbers send by the Coordinator
     const matricNums: string[] = matricNo.split(",");
     const eligibles: Prisma.EligibleCreateInput[] = matricNums.map((num) => {
       return {
-        matricNo: num,
+        matricNo: num.trim(),
+        level,
         institute,
         department,
-        level,
-        supervisor,
+        id: uuid(),
       };
     });
 
     // Check if Eligible Already Exist
     const eligibleExist = await prisma.eligible.findFirst({
       where: {
-        AND: [{ matricNo: { in: matricNums } }, { institute }, { department }],
+        OR: [
+          {
+            AND: [
+              { matricNo: { in: matricNums } },
+              { institute },
+              { department },
+            ],
+          },
+          {
+            matricNo: {
+              in: matricNums,
+            },
+          },
+        ],
       },
     });
 
-    if (eligibleExist) throw new AuthenticationError("Eligible already exist!");
+    if (eligibleExist)
+      throw new AuthenticationError(
+        "One or more of these matric number's eligible already existed!"
+      );
 
-    // Create New Eligiblility
+    // Create New Eligiblilit(ies)
+    let eligible: Eligible = {
+      id: "",
+      institute: "",
+      department: "",
+      level: "L4",
+      matricNo: "",
+      createdAt: null,
+      supervisorId: null,
+      coordinatorId: null,
+    };
+
     await Promise.all(
       eligibles.map(async (eligData) => {
-        prisma.eligible.create({ data: { ...eligData, id: uuid() } });
+        eligible = await prisma.eligible.create({
+          data: {
+            ...eligData,
+            supervisor: { connect: { email: supervisorEmail } },
+            coordinator: { connect: { email: coordinatorEmail } },
+          },
+        });
+        return eligible;
       })
     );
 
     return {
       status: 201,
-      message: "Created eligible successfully!",
+      message: "Created eligibles successfully!",
+      eligible,
     } as ReturnRegisterEligible;
   },
 
   // UPDATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateEligible: async (_, { updateInput: input }, { prisma }) => {
-    const { id, matricNo, level, supervisor } = input;
+    const { id, level, email1: supervisorEmail } = input;
 
     // Validate Input field
     const validate = UpdateEligibleInputSchema.validate(input);
@@ -68,19 +131,48 @@ const eligibleMutations: MutationResolvers = {
       );
 
     // Check if Eligibility Already Exist
-    const eligibleExist = await prisma.eligible.findFirst({
-      where: { OR: [{ id }, { matricNo }] },
+    const eligibleExist = await prisma.eligible.findUnique({
+      where: { id },
     });
 
-    if (eligibleExist) {
-      throw new AuthenticationError("Eligibility already exist!");
+    if (!eligibleExist) {
+      throw new AuthenticationError("Eligibility doesn't exist!");
     }
 
+    // Validate if the Supervisor Existed!
+    const supervisor = await prisma.supervisor.findUnique({
+      where: { email: supervisorEmail },
+    });
+
+    if (!supervisor)
+      throw new AuthenticationError("Assigned Supervisor doesn't exist!");
+
     // Update Eligible User
-    const data = { level, supervisor, matricNo };
+    const data = { level };
     const updatedEligible = await prisma.eligible.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        supervisor: {
+          connect: { email: supervisorEmail },
+        },
+      },
+    });
+
+    const matricNo = eligibleExist.matricNo;
+    const student = await prisma.student.findFirst({ where: { matricNo } });
+    const email = student?.email;
+
+    // Update student's supervisor as well
+    await prisma.student.update({
+      where: { email },
+      data: { 
+        supervisor: { 
+          connect: {
+            email: supervisorEmail
+          } 
+      }
+    },
     });
 
     return {

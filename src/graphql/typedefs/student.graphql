@@ -13,6 +13,7 @@ type Student {
   email: String
   password: String
   avatar: String
+  eligible: Boolean
   user: User!
   supervisor: Supervisor
   coordinator: Coordinator
@@ -36,6 +37,7 @@ type RegisteredStudent {
   email: String
   password: String
   avatar: String
+  eligible: Boolean
   user: User
 }
 

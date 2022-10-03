@@ -1,13 +1,34 @@
-import { DelStudentInputSchema, StudentInputSchema, UpdateStudentInputSchema } from "../../../joi/student.joi";
-import { DeletedStudent, MutationResolvers, ReturnRegisteredStudent } from "../../generated";
+import {
+  DelStudentInputSchema,
+  StudentInputSchema,
+  UpdateStudentInputSchema,
+} from "../../../joi/student.joi";
+import {
+  DeletedStudent,
+  MutationResolvers,
+  ReturnRegisteredStudent,
+} from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { hashPassword } from "../../../utils/hashedPwd.util";
 import { v4 as uuid } from "uuid";
+import titleCase from "../../../utils/titlecase.utl";
 
 const studentMutations: MutationResolvers = {
   // CREATE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   student: async (_, { registerInput: input }, { prisma }) => {
+    const {
+      firstName,
+      lastName,
+      matricNo,
+      address,
+      institute,
+      department,
+      email,
+      password,
+      place: organisationEmail,
+    } = input;
+
     // Validate Input field
     const validate = StudentInputSchema.validate(input);
     const { error } = validate;
@@ -18,23 +39,74 @@ const studentMutations: MutationResolvers = {
           "Validation Error!"
       );
 
-    // Check if Email Already Exist
-    const studentExist = await prisma.student.findUnique({
-      where: { email: input.email },
+    // Check if Student Already Exist
+    const studentExist = await prisma.student.findFirst({
+      where: { OR: [
+        { email }, 
+        { matricNo }
+      ]},
     });
 
     if (studentExist) throw new AuthenticationError("Student already existed!");
 
+    // Check if the Student is Eligible
+    const eligible = await prisma.eligible.findUnique({
+      where: { matricNo },
+      include: {
+        supervisor: true,
+        coordinator: true,
+      },
+    });
+
+    if (!eligible)
+      throw new AuthenticationError(
+        "Sorry, you aren't eligible to signup yet!"
+      );
+
+    // Check if the organisation existed
+    const organisation = await prisma.organisation.findUnique({
+      where: { email: organisationEmail },
+    });
+
+    if (!organisation)
+      throw new AuthenticationError("This organisation doesn't exist!");
+
+    // Get Student assigned Supervior and Coordinator emails
+    const supervisorId = eligible.supervisor?.id;
+    const cooordinatorId = eligible.coordinator?.id;
+    const organisationId = organisation.id;
+
     // Hashed and Replaced Password Input
-    const hashPwd = await hashPassword(input.password);
+    const hashPwd = await hashPassword(password);
     input.password = hashPwd;
+    input.firstName = titleCase(firstName);
+    input.lastName = titleCase(lastName);
+    input.email = email.toLowerCase();
+    input.matricNo = matricNo.toUpperCase();
+    input.institute = titleCase(institute);
+    input.department = titleCase(department);
+    input.address = titleCase(address);
 
     // Create New Student User
     const studentData = {
       ...input,
       id: uuid(),
     };
-    const newStudent = await prisma.student.create({ data: studentData });
+    const newStudent = await prisma.student.create({
+      data: {
+        ...studentData,
+        eligible: true,
+        supervisor: {
+          connect: { id: supervisorId },
+        },
+        coordinator: {
+          connect: { id: cooordinatorId },
+        },
+        organisation: {
+          connect: { id: organisationId },
+        },
+      },
+    });
 
     // Remove the password field for security reasons
     Reflect.deleteProperty(newStudent, "password");
@@ -81,14 +153,18 @@ const studentMutations: MutationResolvers = {
 
     // Check if Email Already Exist
     const studentExist = await prisma.student.findUnique({
-      where: { email: email },
+      where: { email },
     });
     if (!studentExist) {
       throw new AuthenticationError("Student doesn't exist!");
     }
 
+    input.firstName = titleCase(firstName);
+    input.lastName = titleCase(lastName);
+    input.address = titleCase(address);
+
     // Update Student User
-    const updateStudentData = {
+    const data = {
       firstName,
       lastName,
       phone,
@@ -99,8 +175,8 @@ const studentMutations: MutationResolvers = {
     };
 
     const updatedStudent = await prisma.student.update({
-      where: { email: email },
-      data: updateStudentData,
+      where: { email },
+      data,
     });
 
     // Generate Access and Refreshed Token
@@ -136,7 +212,7 @@ const studentMutations: MutationResolvers = {
 
     // Check if Student Already Exist
     const studentExist = await prisma.student.findUnique({
-      where: { email: email },
+      where: { email },
     });
     if (!studentExist) {
       throw new AuthenticationError("Student doesn't exist!");
@@ -144,7 +220,7 @@ const studentMutations: MutationResolvers = {
 
     // Delete Student
     const deletedStudent = await prisma.student.delete({
-      where: { email: email },
+      where: { email },
     });
     const { id: deletedId, firstName, lastName, matricNo } = deletedStudent;
 

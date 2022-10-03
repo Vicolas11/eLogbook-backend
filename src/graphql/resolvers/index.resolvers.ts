@@ -21,7 +21,6 @@ import uploadFileMutation from "./uploadfile";
 import studentLogin from "./login/student";
 import { Resolvers } from "../generated";
 
-
 const resolvers: Resolvers = {
   ...scalarResolvers,
   Query: {

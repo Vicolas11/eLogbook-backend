@@ -3,17 +3,28 @@ import { Organisation } from "@prisma/client";
 import { prisma } from "../context";
 
 export const getAllOrganisations = async (): Promise<Organisation[]> => {
-  const organisations = await prisma.organisation.findMany();
+  const organisations = await prisma.organisation.findMany({
+    include: {
+      students: true,
+    },
+  });
   return organisations;
 };
 
-const getOrganisationByID = async (id: string): Promise<Organisation | null> => {
+const getOrganisationByID = async(id: string): Promise<Organisation | null> => {
   console.log(`Called getUserById for id: ${id}`);
-  const organisation = await prisma.organisation.findUnique({ where: { id } });
+  const organisation = await prisma.organisation.findUnique({
+    where: { id },
+    include: { 
+      students: true,
+    },
+  });
   if (!organisation) throw new AuthenticationError("Organisation not found!");
   return organisation;
 };
 
-export const getOrganisationByIDs = (ids: string[]): Promise<Organisation | null>[] => {
+export const getOrganisationByIDs = (
+  ids: string[]
+): Promise<Organisation | null>[] => {
   return ids.map((id) => getOrganisationByID(id));
 };

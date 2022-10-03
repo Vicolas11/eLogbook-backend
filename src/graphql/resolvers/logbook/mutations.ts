@@ -6,8 +6,7 @@ import { v4 as uuid } from "uuid";
 const logbookMutations: MutationResolvers = {
   // CREATE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   logbook: async (_, { input }, { prisma }) => {
-    const { email, day: date, title, description, diagram, label } = input;
-    const day = date.toDateString();
+    const { email, day, title, description, diagram, label } = input;
     // Input Validation
     const validate = LogbookInputSchema.validate(input);
     const { error } = validate;
@@ -59,8 +58,7 @@ const logbookMutations: MutationResolvers = {
   },
   // UPDATE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateLogbook: async (_, { input }, { prisma }) => {
-    const { id, email, day: date, title, description, diagram, label } = input;
-    const day = date.toDateString();
+    const { id, email, day, title, description, diagram, label } = input;
 
     // Input Validation
     const validate = UpdateLogbookInputSchema.validate(input);

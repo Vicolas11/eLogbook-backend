@@ -76,7 +76,7 @@ model Student {
   id             String        @id @default(uuid())
   firstName      String
   lastName       String
-  matricNo       String
+  matricNo       String        @unique
   phone          String
   address        String?
   institute      String
@@ -87,6 +87,7 @@ model Student {
   email          String        @unique
   password       String
   avatar         String
+  eligible       Boolean?      @default(false)
   user           User          @default(Student)
   supervisor     Supervisor?   @relation(fields: [supervisorId], references: [id])
   coordinator    Coordinator?  @relation(fields: [coordinatorId], references: [id])
@@ -115,6 +116,7 @@ model Supervisor {
   coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
   joinedDate    DateTime     @default(now())
   coordinatorId String?
+  eligibles     Eligible[]
 }
 
 model Coordinator {
@@ -133,6 +135,7 @@ model Coordinator {
   students    Student[]
   supervisors Supervisor[]
   joinedDate  DateTime     @default(now())
+  Eligible    Eligible[]
 }
 
 model Organisation {
@@ -171,13 +174,16 @@ model BlogPost {
 }
 
 model Eligible {
-  id         String    @id @default(uuid())
-  institute  String
-  department String
-  level      Level
-  supervisor String
-  matricNo   String
-  createdAt  DateTime? @default(now())
+  id            String       @id @default(uuid())
+  institute     String
+  department    String
+  level         Level
+  supervisor    Supervisor?  @relation(fields: [supervisorId], references: [id])
+  coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
+  matricNo      String       @unique
+  createdAt     DateTime?    @default(now())
+  supervisorId  String?
+  coordinatorId String?
 }
 
 model Logbook {
@@ -187,7 +193,7 @@ model Logbook {
   description String
   label       Label     @default(indigo)
   diagram     String?
-  approved    Boolean?   @default(false)
+  approved    Boolean?  @default(false)
   student     Student?  @relation(fields: [studentId], references: [id])
   createdAt   DateTime? @default(now())
   studentId   String?

@@ -3,7 +3,8 @@ type Eligible {
   institute: String
   department: String
   level: Level
-  supervisor: String
+  supervisor: Supervisor
+  coordinator: Coordinator
   matricNo: String
   createdAt: DateTime
 }
@@ -13,7 +14,8 @@ type ReturnedEligible {
   institute: String
   department: String
   level: Level
-  supervisor: String
+  supervisor: Supervisor
+  coordinator: Coordinator
   matricNo: String
 }
 

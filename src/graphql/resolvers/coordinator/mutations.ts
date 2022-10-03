@@ -8,6 +8,7 @@ import { v4 as uuid } from "uuid";
 const coordinatorMutations: MutationResolvers = {
   // CREATE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   coordinator: async (_, { registerInput: input }, { prisma }) => {
+    const { department, institute, email } = input;
     // Validate Input field
     const validate = CoordinatorInputSchema.validate(input);
     const { error } = validate;
@@ -20,11 +21,22 @@ const coordinatorMutations: MutationResolvers = {
 
     // Check if Email Already Exist
     const coordinatorExist = await prisma.coordinator.findUnique({
-      where: { email: input.email },
+      where: { email },
     });
 
     if (coordinatorExist)
       throw new AuthenticationError("Coordinator already existed!");
+
+    // Validate only a coordinator exist in dept of a school
+    const onlyCoordExist = await prisma.coordinator.findFirst({
+      where: { AND: [
+        { department }, 
+        { institute }
+      ]}
+    });
+
+    if (onlyCoordExist)
+      throw new AuthenticationError("Coordinator in this department of this school already existed!");
 
     // Hashed and Replaced Password Input
     const hashPwd = await hashPassword(input.password);

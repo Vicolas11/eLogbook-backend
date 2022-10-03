@@ -339,21 +339,21 @@ export type DeletedSupervisor = {
 
 export type Eligible = {
   __typename?: 'Eligible';
+  coordinator?: Maybe<Coordinator>;
   createdAt?: Maybe<Scalars['DateTime']>;
   department?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   institute?: Maybe<Scalars['String']>;
   level?: Maybe<Level>;
   matricNo?: Maybe<Scalars['String']>;
-  supervisor?: Maybe<Scalars['String']>;
+  supervisor?: Maybe<Supervisor>;
 };
 
 export type EligibleInput = {
-  department: Scalars['String'];
-  institute: Scalars['String'];
+  email1: Scalars['String'];
+  email2: Scalars['String'];
   level: Level;
   matricNo: Scalars['String'];
-  supervisor: Scalars['String'];
 };
 
 export enum FileDir {
@@ -738,6 +738,7 @@ export type RegisteredStudent = {
   address?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
   department?: Maybe<Scalars['String']>;
+  eligible?: Maybe<Scalars['Boolean']>;
   email?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
   gender?: Maybe<Gender>;
@@ -846,12 +847,13 @@ export type ReturnRegisteredSupervisor = Token & {
 
 export type ReturnedEligible = {
   __typename?: 'ReturnedEligible';
+  coordinator?: Maybe<Coordinator>;
   department?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   institute?: Maybe<Scalars['String']>;
   level?: Maybe<Level>;
   matricNo?: Maybe<Scalars['String']>;
-  supervisor?: Maybe<Scalars['String']>;
+  supervisor?: Maybe<Supervisor>;
 };
 
 export enum Sector {
@@ -884,6 +886,7 @@ export type Student = {
   avatar?: Maybe<Scalars['String']>;
   coordinator?: Maybe<Coordinator>;
   department?: Maybe<Scalars['String']>;
+  eligible?: Maybe<Scalars['Boolean']>;
   email?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
   gender?: Maybe<Gender>;
@@ -903,7 +906,7 @@ export type Student = {
 };
 
 export type StudentInput = {
-  address?: InputMaybe<Scalars['String']>;
+  address: Scalars['String'];
   avatar: Scalars['String'];
   department: Scalars['String'];
   email: Scalars['String'];
@@ -972,10 +975,9 @@ export type UpdateCoordinatorInput = {
 };
 
 export type UpdateEligibleInput = {
+  email1: Scalars['String'];
   id: Scalars['ID'];
   level: Level;
-  matricNo: Scalars['String'];
-  supervisor: Scalars['String'];
 };
 
 export type UpdateLogbookInput = {
@@ -999,7 +1001,7 @@ export type UpdateOrganisationInput = {
 };
 
 export type UpdateStudentInput = {
-  address?: InputMaybe<Scalars['String']>;
+  address: Scalars['String'];
   avatar: Scalars['String'];
   email: Scalars['String'];
   firstName: Scalars['String'];
@@ -1495,13 +1497,14 @@ export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 }
 
 export type EligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Eligible'] = ResolversParentTypes['Eligible']> = {
+  coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   institute?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   level?: Resolver<Maybe<ResolversTypes['Level']>, ParentType, ContextType>;
   matricNo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  supervisor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  supervisor?: Resolver<Maybe<ResolversTypes['Supervisor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1778,6 +1781,7 @@ export type RegisteredStudentResolvers<ContextType = IContext, ParentType extend
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  eligible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
@@ -1886,12 +1890,13 @@ export type ReturnRegisteredSupervisorResolvers<ContextType = IContext, ParentTy
 };
 
 export type ReturnedEligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnedEligible'] = ResolversParentTypes['ReturnedEligible']> = {
+  coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   institute?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   level?: Resolver<Maybe<ResolversTypes['Level']>, ParentType, ContextType>;
   matricNo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  supervisor?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  supervisor?: Resolver<Maybe<ResolversTypes['Supervisor']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1908,6 +1913,7 @@ export type StudentResolvers<ContextType = IContext, ParentType extends Resolver
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  eligible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;

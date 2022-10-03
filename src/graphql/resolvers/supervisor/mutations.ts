@@ -1,13 +1,23 @@
-import { DelSupervisorInputSchema, SupervisorInputSchema, UpdateSupervisorInputSchema } from "../../../joi/supervisor.joi";
-import { DeletedSupervisor, MutationResolvers, ReturnRegisteredSupervisor } from "../../generated";
+import {
+  DelSupervisorInputSchema,
+  SupervisorInputSchema,
+  UpdateSupervisorInputSchema,
+} from "../../../joi/supervisor.joi";
+import {
+  DeletedSupervisor,
+  MutationResolvers,
+  ReturnRegisteredSupervisor,
+} from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { hashPassword } from "../../../utils/hashedPwd.util";
 import { v4 as uuid } from "uuid";
+import titleCase from "../../../utils/titlecase.utl";
 
 const supervisorMutations: MutationResolvers = {
   // CREATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   supervisor: async (_, { registerInput: input }, { prisma }) => {
+    const { email, institute, department, firstName, lastName, staffID } = input;
     // Validate Input field
     const validate = SupervisorInputSchema.validate(input);
     const { error } = validate;
@@ -20,15 +30,35 @@ const supervisorMutations: MutationResolvers = {
 
     // Check if Email Already Exist
     const supervisorExist = await prisma.supervisor.findUnique({
-      where: { email: input.email },
+      where: { email },
     });
 
     if (supervisorExist)
       throw new AuthenticationError("Supervisor already existed!");
 
+    // Get the Coordinator in a department of a school
+    const coordinator = await prisma.coordinator.findFirst({
+      where: {
+        AND: [{ institute }, { department }],
+      },
+    });
+
+    if (!coordinator)
+      throw new AuthenticationError(
+        "Sorry, coordinator for this department doesn't exist!"
+      );
+
+    const cooordinatorId = coordinator?.id;
+
     // Hashed and Replaced Password Input
     const hashPwd = await hashPassword(input.password);
     input.password = hashPwd;
+    input.firstName = titleCase(firstName);
+    input.lastName = titleCase(lastName);
+    input.staffID = staffID.toUpperCase();
+    input.institute = titleCase(institute);
+    input.department = titleCase(department);
+    input.email = email.toLowerCase();
 
     // Create New Supervisor User
     const supervisorData = {
@@ -36,7 +66,14 @@ const supervisorMutations: MutationResolvers = {
       id: uuid(),
     };
     const newSupervisor = await prisma.supervisor.create({
-      data: supervisorData,
+      data: {
+        ...supervisorData,
+        coordinator: {
+          connect: {
+            id: cooordinatorId,
+          },
+        },
+      },
     });
 
     // Remove the password field for security reasons
@@ -73,16 +110,21 @@ const supervisorMutations: MutationResolvers = {
           "Validation Error!"
       );
 
-    // Check if Email Already Exist
+    // Check if Supervisor Already Exist
     const supervisorExist = await prisma.supervisor.findUnique({
-      where: { email: email },
+      where: { email },
     });
+
     if (!supervisorExist) {
       throw new AuthenticationError("Supervisor doesn't exist!");
     }
 
+    // Ensure field is in Title Case
+    input.firstName = titleCase(firstName);
+    input.lastName = titleCase(lastName);
+
     // Update Supervisor User
-    const updateSupervisorData = {
+    const data = {
       firstName,
       lastName,
       phone,
@@ -91,8 +133,8 @@ const supervisorMutations: MutationResolvers = {
     };
 
     const updatedSupervisor = await prisma.supervisor.update({
-      where: { email: email },
-      data: updateSupervisorData,
+      where: { email },
+      data,
     });
 
     // Generate Access and Refreshed Token

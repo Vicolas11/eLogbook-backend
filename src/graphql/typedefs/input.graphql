@@ -30,7 +30,7 @@ input StudentInput {
   lastName: String!
   matricNo: String!
   phone: String!
-  address: String
+  address: String!
   institute: String!
   department: String!
   level: Level
@@ -46,7 +46,7 @@ input UpdateStudentInput {
   lastName: String!
   email: String!
   phone: String!
-  address: String
+  address: String!
   level: Level
   gender: Gender
   avatar: String!
@@ -165,18 +165,16 @@ input DeleteBlogPostInput {
 
 # Eligiblity >>>>>>>>>>>>>>>>>
 input EligibleInput {
-  institute: String!
-  department: String!
   level: Level!
-  supervisor: String!
   matricNo: String!
+  email1: String!
+  email2: String!
 }
 
 input UpdateEligibleInput {
   id: ID!
   level: Level!
-  supervisor: String!
-  matricNo: String!
+  email1: String!
 }
 
 input DelEligibleInput {

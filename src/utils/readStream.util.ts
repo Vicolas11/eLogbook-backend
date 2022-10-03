@@ -31,7 +31,7 @@ const readStreamFile = async (args: IReadStream): Promise<string> => {
   }
 
   const stream = createReadStream();
-  const unqueFilename = generateUniqueFilename(true);
+  const unqueFilename = generateUniqueFilename(subpath);
   const pathname = join(
     __dirname,
     `../../public/upload/${subpath}/${unqueFilename}`
