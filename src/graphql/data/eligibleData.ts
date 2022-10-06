@@ -2,7 +2,7 @@ import { AuthenticationError } from "apollo-server-express";
 import { Eligible } from "@prisma/client";
 import { prisma } from "../context";
 
-export const getAllEligibles = async (): Promise<Eligible[]> => {
+export const getAllEligibles = async(): Promise<Eligible[]> => {
   const eligibles = await prisma.eligible.findMany({
     include: {
       supervisor: true,
@@ -12,7 +12,7 @@ export const getAllEligibles = async (): Promise<Eligible[]> => {
   return eligibles;
 };
 
-const getEligibleByID = async (id: string): Promise<Eligible | null> => {
+const getEligibleByID = async(id: string): Promise<Eligible | null> => {
   console.log(`Called getUserById for id: ${id}`);
   const eligible = await prisma.eligible.findFirst({
     where: { OR: [{ id }, { matricNo: id }] },

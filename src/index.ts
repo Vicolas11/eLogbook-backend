@@ -29,9 +29,12 @@ config();
 
   // Parse and display static path
   app.use(express.static(join(__dirname, "../public/upload/")));
-  app.use("/avatar", express.static(join(__dirname, "avatar")));
   app.use("/diagrams", express.static(join(__dirname, "diagrams")));
-
+  app.use("/avatar", express.static(join(__dirname, "avatar")));
+  app.use("/chats", express.static(join(__dirname, "chats")));
+  app.use("/blog", express.static(join(__dirname, "blog")));
+  app.use("/logo", express.static(join(__dirname, "logo")));
+  
   // Compress response bodies for every request
   app.use(compression());
 

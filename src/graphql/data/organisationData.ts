@@ -23,8 +23,6 @@ const getOrganisationByID = async(id: string): Promise<Organisation | null> => {
   return organisation;
 };
 
-export const getOrganisationByIDs = (
-  ids: string[]
-): Promise<Organisation | null>[] => {
+export const getOrganisationByIDs = (ids: string[]): Promise<Organisation | null>[] => {
   return ids.map((id) => getOrganisationByID(id));
 };

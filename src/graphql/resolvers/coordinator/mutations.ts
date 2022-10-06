@@ -3,6 +3,7 @@ import { DeletedCoordinator, MutationResolvers, ReturnRegisteredCoordinator } fr
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { hashPassword } from "../../../utils/hashedPwd.util";
+import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
 
 const coordinatorMutations: MutationResolvers = {
@@ -29,14 +30,13 @@ const coordinatorMutations: MutationResolvers = {
 
     // Validate only a coordinator exist in dept of a school
     const onlyCoordExist = await prisma.coordinator.findFirst({
-      where: { AND: [
-        { department }, 
-        { institute }
-      ]}
+      where: { AND: [{ department }, { institute }] },
     });
 
     if (onlyCoordExist)
-      throw new AuthenticationError("Coordinator in this department of this school already existed!");
+      throw new AuthenticationError(
+        "Coordinator in this department of this school already existed!"
+      );
 
     // Hashed and Replaced Password Input
     const hashPwd = await hashPassword(input.password);
@@ -47,6 +47,7 @@ const coordinatorMutations: MutationResolvers = {
       ...input,
       id: uuid(),
     };
+
     const newCoordinator = await prisma.coordinator.create({
       data: coordinatorData,
     });
@@ -56,10 +57,15 @@ const coordinatorMutations: MutationResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      coordinatorID: newCoordinator?.id,
+      id: newCoordinator.id,
+      email: newCoordinator.email,
+      role: newCoordinator.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      coordinatorID: newCoordinator?.id,
+      id: newCoordinator.id,
+      email: newCoordinator.email,
+      role: newCoordinator.user,
     });
 
     return {
@@ -72,8 +78,19 @@ const coordinatorMutations: MutationResolvers = {
   },
 
   // UPDATE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateCoordinator: async (_, { updateInput: input }, { prisma }) => {
-    const { email, firstName, lastName, phone, gender, avatar } = input;
+  updateCoordinator: async (_, { updateInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== 'Coordinator' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
+    const { firstName, lastName, phone, gender, avatar, email } = input;
 
     // Validate Input field
     const validate = UpdateCoordinatorInputSchema.validate(input);
@@ -87,10 +104,16 @@ const coordinatorMutations: MutationResolvers = {
 
     // Check if Email Already Exist
     const coordinatorExist = await prisma.coordinator.findUnique({
-      where: { email: email },
+      where: { email },
     });
+
     if (!coordinatorExist) {
       throw new AuthenticationError("Coordinator doesn't exist!");
+    }
+
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email) {
+      throw new AuthenticationError("Not authorized: not a genuine user!");
     }
 
     // Update Coordinator User
@@ -103,16 +126,21 @@ const coordinatorMutations: MutationResolvers = {
     };
 
     const updatedCoordinator = await prisma.coordinator.update({
-      where: { email: email },
+      where: { email: loginUserEmail },
       data: updateCoordinatorData,
     });
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      coordinatorID: updatedCoordinator.id,
+      id: updatedCoordinator.id,
+      email: updatedCoordinator.email,
+      role: updatedCoordinator.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      coordinatorID: updatedCoordinator.id,
+      id: updatedCoordinator.id,
+      email: updatedCoordinator.email,
+      role: updatedCoordinator.user,
     });
 
     return {
@@ -125,7 +153,17 @@ const coordinatorMutations: MutationResolvers = {
   },
 
   // DElETE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteCoordinator: async (_, { emailInput }, { prisma }) => {
+  deleteCoordinator: async (_, { emailInput }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== 'Coordinator' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
     const { email } = emailInput;
 
     // Validate Input field
@@ -140,15 +178,21 @@ const coordinatorMutations: MutationResolvers = {
 
     // Check if Coordinator Already Exist
     const coordinatorExist = await prisma.coordinator.findUnique({
-      where: { email: email },
+      where: { email },
     });
+
     if (!coordinatorExist) {
       throw new AuthenticationError("Coordinator doesn't exist!");
     }
 
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email) {
+      throw new AuthenticationError("Not authorized: not a genuine user!");
+    }
+
     // Delete Coordinator
     const deletedCoordinator = await prisma.coordinator.delete({
-      where: { email: email },
+      where: { email: loginUserEmail },
     });
     const { id: deletedId, firstName, lastName, staffID } = deletedCoordinator;
 

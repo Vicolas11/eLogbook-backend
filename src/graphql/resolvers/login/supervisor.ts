@@ -31,10 +31,15 @@ const supervisorLogin: QueryResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      supervisorID: supervisor?.id,
+      id: supervisor.id,
+      email: supervisor.email,
+      role: supervisor.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      supervisorID: supervisor?.id,
+      id: supervisor.id,
+      email: supervisor.email,
+      role: supervisor.user,
     });
 
     // Remove Password field for security reasons

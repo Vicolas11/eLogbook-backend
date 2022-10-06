@@ -21,12 +21,13 @@ const getCoordinatorByID = async (id: string): Promise<Coordinator | null> => {
       supervisors: true,
     },
   });
-  if (!coordinator) throw new AuthenticationError("Coordinator not found!");
+
+  if (!coordinator) 
+    throw new AuthenticationError("Coordinator not found!");
+    
   return coordinator;
 };
 
-export const getCoordinatorByIDs = (
-  ids: string[]
-): Promise<Coordinator | null>[] => {
+export const getCoordinatorByIDs = (ids: string[]): Promise<Coordinator | null>[] => {
   return ids.map((id) => getCoordinatorByID(id));
 };

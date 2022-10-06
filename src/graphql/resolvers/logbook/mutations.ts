@@ -1,15 +1,29 @@
 import { DelLogbookInputSchema, LogbookInputSchema, UpdateLogbookInputSchema } from "../../../joi/logbook.joi";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ResponseLogbook } from "../../generated";
+import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
 
 const logbookMutations: MutationResolvers = {
   // CREATE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  logbook: async (_, { input }, { prisma }) => {
+  logbook: async (_, { input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Student or an Admin
+    if (role !== 'Student' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { email, day, title, description, diagram, label } = input;
+
     // Input Validation
     const validate = LogbookInputSchema.validate(input);
     const { error } = validate;
+
     if (error)
       throw new ValidationError(
         (error?.details?.map((err) => err.message) as unknown as string) ||
@@ -33,8 +47,12 @@ const logbookMutations: MutationResolvers = {
 
     if (!student)
       throw new AuthenticationError(
-        "Logbook associated student doesn't existed!"
+        "Logbook associated student doesn't exist!"
       );
+
+    // Authorized if user is genuine
+    if (loginUserEmail !== email)
+      throw new AuthenticationError("Not authorize: Not genuine user!");
 
     // Create Logbook and connect to the Login Student
     const inputData = { id: uuid(), day, title, description, diagram, label };
@@ -42,7 +60,7 @@ const logbookMutations: MutationResolvers = {
       data: {
         ...inputData,
         student: {
-          connect: { email },
+          connect: { email: loginUserEmail },
         },
       },
       include: {
@@ -57,7 +75,18 @@ const logbookMutations: MutationResolvers = {
     } as ResponseLogbook;
   },
   // UPDATE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateLogbook: async (_, { input }, { prisma }) => {
+  updateLogbook: async (_, { input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Student or an Admin
+    if (role !== 'Student' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { id, email, day, title, description, diagram, label } = input;
 
     // Input Validation
@@ -88,6 +117,10 @@ const logbookMutations: MutationResolvers = {
       throw new AuthenticationError(
         "Logbook associated student doesn't exist!"
       );
+    
+    // Authorize if the user if genuine
+    if (loginUserEmail !== email) 
+      throw new AuthenticationError("Not authenticated: Not genuine user!")
 
     // Update Logbook and connect to the Login Student
     const inputData = { title, description, diagram, label };
@@ -111,17 +144,33 @@ const logbookMutations: MutationResolvers = {
     } as ResponseLogbook;
   },
   // DELETE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteLogbook: async (_, { input }, { prisma }) => {
+  deleteLogbook: async (_, { input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Student or an Admin
+    if (role !== 'Student' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { id: logbookId, email: studentEmail } = input;
 
     // Input Validation
     const validate = DelLogbookInputSchema.validate(input);
     const { error } = validate;
+
     if (error)
       throw new ValidationError(
         (error?.details?.map((err) => err.message) as unknown as string) ||
           "Validation Error!"
       );
+
+    // Authorize if the user if genuine
+    if (loginUserEmail !== studentEmail) 
+      throw new AuthenticationError("Not authenticated: Not genuine user!")
 
     // Validate if Logbook exist
     const studLogbook = await prisma.logbook.findFirst({

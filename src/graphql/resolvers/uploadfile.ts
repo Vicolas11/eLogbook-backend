@@ -1,8 +1,9 @@
+import { AuthenticationError, UserInputError, ValidationError } from "apollo-server-express";
 import { FileInputSchema, FileUpdateInputSchema } from "../../joi/uploadfile.joi";
-import { UserInputError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, UploadResponse } from "../generated";
 import readStreamFile from "../../utils/readStream.util";
 import deleteFile from "../../utils/deletefile.utils";
+import getUser from "../../utils/getuser.util";
 
 const uploadFileMutation: MutationResolvers = {
   // CREATE UPDATE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -39,7 +40,14 @@ const uploadFileMutation: MutationResolvers = {
   },
 
   // UPDATE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateFile: async (_, { updateInput: input }, { prisma }) => {
+  updateFile: async (_, { updateInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { id: loginUserId, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserId === "" || role === "")
+      throw new AuthenticationError("User not authenticated!");
+
     const { file, id, type } = input;
 
     // Validate Input field
@@ -52,15 +60,22 @@ const uploadFileMutation: MutationResolvers = {
           "Validation Error!"
       );
 
-    const user = await prisma.student.findUnique({ where: { id: id } });
+    const loginUserRole = role.toLowerCase();
+    const userExist = await prisma[loginUserRole].findUnique({
+      where: { id: loginUserId },
+    });
     const getFile = await file;
-    if (!getFile) {
-      throw new UserInputError("Uploaded an empty file!");
-    }
+
+    if (!userExist) throw new AuthenticationError("User doen't exist!");
+
+    if (!getFile) throw new AuthenticationError("Uploaded an empty file!");
+
+    if (loginUserId !== id)
+      throw new AuthenticationError("Not authorized: Not a genuine user!");
 
     const imageURL = await readStreamFile({
       file: file,
-      oldImgURL: user?.avatar || "",
+      oldImgURL: userExist?.avatar || "",
       action: "update",
       subpath: type,
     });
@@ -73,9 +88,26 @@ const uploadFileMutation: MutationResolvers = {
   },
 
   // DELETE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteFile: async (_, { deleteInput: id }, { prisma }) => {
-    const user = await prisma.student.findUnique({ where: { id: id } });
-    const isDeleted = await deleteFile(user?.avatar as string, true);
+  deleteFile: async (_, { deleteInput: id }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { id: loginUserId, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserId === "" || role === "")
+      throw new AuthenticationError("User not authenticated!");
+
+    const loginUserRole = role.toLowerCase();
+    const userExist = await prisma[loginUserRole].findUnique({
+      where: { id: loginUserId },
+    });
+
+    if (!userExist) throw new AuthenticationError("User doen't exist!");
+
+    // Authorized user, if is Genuine
+    if (loginUserId !== id)
+      throw new AuthenticationError("Not authorized: Not a genuine user!");
+
+    const isDeleted = await deleteFile(userExist?.avatar as string, true);
     const message = isDeleted
       ? "Image successfuly deleted!"
       : "Image deleting failed!";
@@ -83,7 +115,7 @@ const uploadFileMutation: MutationResolvers = {
 
     return {
       message: message,
-      imageUrl: user?.avatar,
+      imageUrl: userExist?.avatar,
       status: status,
     } as UploadResponse;
   },

@@ -3,10 +3,10 @@ import { DeletedOrganisation, MutationResolvers, ReturnRegisteredOrganisation } 
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { hashPassword } from "../../../utils/hashedPwd.util";
+import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
 
 const organisationMutations: MutationResolvers = {
-
   // CREATE ORGANISATION USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   organisation: async (_, { registerInput: input }, { prisma }) => {
     // Validate Input field
@@ -18,10 +18,12 @@ const organisationMutations: MutationResolvers = {
         (error?.details?.map((err) => err.message) as unknown as string) ||
           "Validation Error!"
       );
+    
+    const { email } = input;
 
     // Check if Email Already Exist
     const organisationExist = await prisma.organisation.findUnique({
-      where: { email: input.email },
+      where: { email },
     });
 
     if (organisationExist)
@@ -45,10 +47,15 @@ const organisationMutations: MutationResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      organisationID: newOrganisation?.id,
+      id: newOrganisation.id,
+      email: newOrganisation.email,
+      role: newOrganisation.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      organisationID: newOrganisation?.id,
+      id: newOrganisation.id,
+      email: newOrganisation.email,
+      role: newOrganisation.user,
     });
 
     return {
@@ -61,7 +68,18 @@ const organisationMutations: MutationResolvers = {
   },
 
   // UPDATE ORGANISATION USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateOrganisation: async (_, { updateInput: input }, { prisma }) => {
+  updateOrganisation: async (_, { updateInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Organisation or an Admin
+    if (role !== 'Organisation' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { email, name, sector, phone, address, employees, logo } = input;
 
     // Validate Input field
@@ -76,11 +94,15 @@ const organisationMutations: MutationResolvers = {
 
     // Check if Email Already Exist
     const organisationExist = await prisma.organisation.findUnique({
-      where: { email: email },
+      where: { email },
     });
-    if (!organisationExist) {
-      throw new AuthenticationError("Organisation doesn't exist!");
-    }
+
+    if (!organisationExist)
+      throw new AuthenticationError("Organisation doesn't exist!");    
+
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email)
+      throw new AuthenticationError("Not authorized: not a genuine user!");
 
     // Update Organisation User
     const updateOrganisationData = {
@@ -93,16 +115,21 @@ const organisationMutations: MutationResolvers = {
     };
 
     const updatedOrganisation = await prisma.organisation.update({
-      where: { email: email },
+      where: { email: loginUserEmail },
       data: updateOrganisationData,
     });
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      organisationID: updatedOrganisation.id,
+      id: updatedOrganisation.id,
+      email: updatedOrganisation.email,
+      role: updatedOrganisation.user,
     });
+    
     const refreshToken = await signRefreshJWToken({
-      organisationID: updatedOrganisation.id,
+      id: updatedOrganisation.id,
+      email: updatedOrganisation.email,
+      role: updatedOrganisation.user,
     });
 
     return {
@@ -115,7 +142,18 @@ const organisationMutations: MutationResolvers = {
   },
 
   // DElETE ORGANISATION USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteOrganisation: async (_, { emailInput }, { prisma }) => {
+  deleteOrganisation: async (_, { emailInput }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Organisation or an Admin
+    if (role !== 'Organisation' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { email } = emailInput;
 
     // Validate Input field
@@ -130,15 +168,21 @@ const organisationMutations: MutationResolvers = {
 
     // Check if Organisation Already Exist
     const organisationExist = await prisma.organisation.findUnique({
-      where: { email: email },
+      where: { email },
     });
+
     if (!organisationExist) {
       throw new AuthenticationError("Organisation doesn't exist!");
     }
 
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email) {
+      throw new AuthenticationError("Not authorized: not a genuine user!");
+    }
+
     // Delete Organisation
     const deletedOrganisation = await prisma.organisation.delete({
-      where: { email: email },
+      where: { email: loginUserEmail },
     });
 
     const { id: delId, name, sector, email: delEmail } = deletedOrganisation;

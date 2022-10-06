@@ -1,5 +1,4 @@
 import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
-// import { graphqlUploadExpress } from 'graphql-upload';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { ApolloServer } from "apollo-server-express";
 import { envConfig } from "../configs/env.config";

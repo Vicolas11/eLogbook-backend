@@ -1,6 +1,6 @@
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
-import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { QueryResolvers, ReturnRegisteredOrganisation } from "../../generated";
+import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { validatePassword } from "../../../utils/hashedPwd.util";
 import { LoginInputSchema } from "../../../joi/login.joi";
 
@@ -31,10 +31,15 @@ const organisationLogin: QueryResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      organisationID: organisation?.id,
+      id: organisation.id,
+      email: organisation.email,
+      role: organisation.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      organisationID: organisation?.id,
+      id: organisation.id,
+      email: organisation.email,
+      role: organisation.user,
     });
 
     // Remove Password field for security reasons

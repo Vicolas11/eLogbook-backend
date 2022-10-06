@@ -1,22 +1,25 @@
-import {
-  DelEligibleInputSchema,
-  EligibleInputSchema,
-  UpdateEligibleInputSchema,
-} from "../../../joi/eligible.joi";
+import { DelEligibleInputSchema, EligibleInputSchema, UpdateEligibleInputSchema } from "../../../joi/eligible.joi";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ReturnRegisterEligible } from "../../generated";
 import { Eligible, Prisma } from "@prisma/client";
+import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
 
 const eligibleMutations: MutationResolvers = {
-  // CREATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  eligible: async (_, { registerInput: input }, { prisma }) => {
-    const {
-      matricNo,
-      level,
-      email1: supervisorEmail,
-      email2: coordinatorEmail,
-    } = input;
+  // CREATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  eligible: async (_, { registerInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email, role } = user;
+
+    // Authenticate user
+    if (!user || email === "" || role === "")
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== "Coordinator" && role !== "Admin")
+      throw new AuthenticationError("Not authorized!");
+
+    const { matricNo, level, email: supervisorEmail } = input;
 
     // Validate Input field
     const validate = EligibleInputSchema.validate(input);
@@ -30,7 +33,7 @@ const eligibleMutations: MutationResolvers = {
 
     // Validate if the Coodinator Existed!
     const coordinator = await prisma.coordinator.findUnique({
-      where: { email: coordinatorEmail },
+      where: { email },
     });
 
     if (!coordinator)
@@ -102,7 +105,7 @@ const eligibleMutations: MutationResolvers = {
           data: {
             ...eligData,
             supervisor: { connect: { email: supervisorEmail } },
-            coordinator: { connect: { email: coordinatorEmail } },
+            coordinator: { connect: { email } },
           },
         });
         return eligible;
@@ -116,9 +119,20 @@ const eligibleMutations: MutationResolvers = {
     } as ReturnRegisterEligible;
   },
 
-  // UPDATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateEligible: async (_, { updateInput: input }, { prisma }) => {
-    const { id, level, email1: supervisorEmail } = input;
+  // UPDATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  updateEligible: async (_, { updateInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { id: loginUserId, email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === "" || role === "" || loginUserId == "")
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== "Coordinator" && role !== "Admin")
+      throw new AuthenticationError("Not authorized!");
+
+    const { id: eligibleId, level, email: supervisorEmail } = input;
 
     // Validate Input field
     const validate = UpdateEligibleInputSchema.validate(input);
@@ -132,12 +146,16 @@ const eligibleMutations: MutationResolvers = {
 
     // Check if Eligibility Already Exist
     const eligibleExist = await prisma.eligible.findUnique({
-      where: { id },
+      where: { id: eligibleId },
     });
 
     if (!eligibleExist) {
       throw new AuthenticationError("Eligibility doesn't exist!");
     }
+
+    // Authorized if is the genuine user
+    if (eligibleExist.coordinatorId !== loginUserId)
+      throw new AuthenticationError("Not authorized: Not genuine user!");
 
     // Validate if the Supervisor Existed!
     const supervisor = await prisma.supervisor.findUnique({
@@ -150,7 +168,7 @@ const eligibleMutations: MutationResolvers = {
     // Update Eligible User
     const data = { level };
     const updatedEligible = await prisma.eligible.update({
-      where: { id },
+      where: { id: eligibleId },
       data: {
         ...data,
         supervisor: {
@@ -166,13 +184,13 @@ const eligibleMutations: MutationResolvers = {
     // Update student's supervisor as well
     await prisma.student.update({
       where: { email },
-      data: { 
-        supervisor: { 
+      data: {
+        supervisor: {
           connect: {
-            email: supervisorEmail
-          } 
-      }
-    },
+            email: supervisorEmail,
+          },
+        },
+      },
     });
 
     return {
@@ -183,7 +201,17 @@ const eligibleMutations: MutationResolvers = {
   },
 
   // DElETE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteEligible: async (_, { deleteInput: input }, { prisma }) => {
+  deleteEligible: async (_, { deleteInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { id: loginUserId, email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === "" || role === "" || loginUserId === "")
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== "Coordinator" && role !== "Admin")
+      throw new AuthenticationError("Not authorized!");
     const { id } = input;
 
     // Validate Input field
@@ -205,9 +233,13 @@ const eligibleMutations: MutationResolvers = {
       throw new AuthenticationError("Eligible doesn't exist!");
     }
 
+    // Authorize if loginUser is genuine
+    if (eligibleExist.coordinatorId !== loginUserId)
+      throw new AuthenticationError("Not authorized: Not genuine user!");
+
     // Delete Eligible
     const delEligible = await prisma.eligible.delete({
-      where: { id },
+      where: { id: loginUserId },
     });
 
     return {

@@ -1,23 +1,17 @@
-import {
-  DelSupervisorInputSchema,
-  SupervisorInputSchema,
-  UpdateSupervisorInputSchema,
-} from "../../../joi/supervisor.joi";
-import {
-  DeletedSupervisor,
-  MutationResolvers,
-  ReturnRegisteredSupervisor,
-} from "../../generated";
+import { DelSupervisorInputSchema, SupervisorInputSchema, UpdateSupervisorInputSchema } from "../../../joi/supervisor.joi";
+import { DeletedSupervisor, MutationResolvers, ReturnRegisteredSupervisor } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { hashPassword } from "../../../utils/hashedPwd.util";
-import { v4 as uuid } from "uuid";
 import titleCase from "../../../utils/titlecase.utl";
+import getUser from "../../../utils/getuser.util";
+import { v4 as uuid } from "uuid";
 
 const supervisorMutations: MutationResolvers = {
   // CREATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   supervisor: async (_, { registerInput: input }, { prisma }) => {
     const { email, institute, department, firstName, lastName, staffID } = input;
+    
     // Validate Input field
     const validate = SupervisorInputSchema.validate(input);
     const { error } = validate;
@@ -81,10 +75,15 @@ const supervisorMutations: MutationResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      supervisorID: newSupervisor?.id,
+      id: newSupervisor.id,
+      email: newSupervisor.email,
+      role: newSupervisor.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      supervisorID: newSupervisor?.id,
+      id: newSupervisor.id,
+      email: newSupervisor.email,
+      role: newSupervisor.user,
     });
 
     return {
@@ -97,7 +96,18 @@ const supervisorMutations: MutationResolvers = {
   },
 
   // UPDATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateSupervisor: async (_, { updateInput: input }, { prisma }) => {
+  updateSupervisor: async (_, { updateInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Supervisor or an Admin
+    if (role !== 'Supervisor' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { email, firstName, lastName, phone, gender, avatar } = input;
 
     // Validate Input field
@@ -115,9 +125,12 @@ const supervisorMutations: MutationResolvers = {
       where: { email },
     });
 
-    if (!supervisorExist) {
+    if (!supervisorExist)
       throw new AuthenticationError("Supervisor doesn't exist!");
-    }
+
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email)
+      throw new AuthenticationError("Not authorized: not a genuine user!");
 
     // Ensure field is in Title Case
     input.firstName = titleCase(firstName);
@@ -133,16 +146,21 @@ const supervisorMutations: MutationResolvers = {
     };
 
     const updatedSupervisor = await prisma.supervisor.update({
-      where: { email },
+      where: { email: loginUserEmail },
       data,
     });
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      supervisorID: updatedSupervisor.id,
+      id: updatedSupervisor.id,
+      email: updatedSupervisor.email,
+      role: updatedSupervisor.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      supervisorID: updatedSupervisor.id,
+      id: updatedSupervisor.id,
+      email: updatedSupervisor.email,
+      role: updatedSupervisor.user,
     });
 
     return {
@@ -155,7 +173,18 @@ const supervisorMutations: MutationResolvers = {
   },
 
   // DElETE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteSupervisor: async (_, { emailInput }, { prisma }) => {
+  deleteSupervisor: async (_, { emailInput }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Supervisor or an Admin
+    if (role !== 'Supervisor' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { email } = emailInput;
 
     // Validate Input field
@@ -170,16 +199,23 @@ const supervisorMutations: MutationResolvers = {
 
     // Check if Supervisor Already Exist
     const supervisorExist = await prisma.supervisor.findUnique({
-      where: { email: email },
+      where: { email },
     });
+
     if (!supervisorExist) {
       throw new AuthenticationError("Supervisor doesn't exist!");
     }
 
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email) {
+      throw new AuthenticationError("Not authorized: not a genuine user!");
+    }
+
     // Delete Supervisor
     const deletedSupervisor = await prisma.supervisor.delete({
-      where: { email: email },
+      where: { email: loginUserEmail },
     });
+
     const { id: deletedId, firstName, lastName, staffID } = deletedSupervisor;
 
     return {

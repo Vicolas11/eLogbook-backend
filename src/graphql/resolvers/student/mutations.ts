@@ -1,18 +1,11 @@
-import {
-  DelStudentInputSchema,
-  StudentInputSchema,
-  UpdateStudentInputSchema,
-} from "../../../joi/student.joi";
-import {
-  DeletedStudent,
-  MutationResolvers,
-  ReturnRegisteredStudent,
-} from "../../generated";
+import { DelStudentInputSchema, StudentInputSchema, UpdateStudentInputSchema } from "../../../joi/student.joi";
+import { DeletedStudent, MutationResolvers, ReturnRegisteredStudent } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { hashPassword } from "../../../utils/hashedPwd.util";
-import { v4 as uuid } from "uuid";
 import titleCase from "../../../utils/titlecase.utl";
+import getUser from "../../../utils/getuser.util";
+import { v4 as uuid } from "uuid";
 
 const studentMutations: MutationResolvers = {
   // CREATE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -92,6 +85,7 @@ const studentMutations: MutationResolvers = {
       ...input,
       id: uuid(),
     };
+
     const newStudent = await prisma.student.create({
       data: {
         ...studentData,
@@ -113,10 +107,15 @@ const studentMutations: MutationResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      studentID: newStudent?.id,
+      id: newStudent.id,
+      email: newStudent.email,
+      role: newStudent.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      studentID: newStudent?.id,
+      id: newStudent.id,
+      email: newStudent.email,
+      role: newStudent.user,
     });
 
     return {
@@ -129,7 +128,18 @@ const studentMutations: MutationResolvers = {
   },
 
   // UPDATE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateStudent: async (_, { updateInput: input }, { prisma }) => {
+  updateStudent: async (_, { updateInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Student or an Admin
+    if (role !== 'Student' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const {
       email,
       firstName,
@@ -155,8 +165,14 @@ const studentMutations: MutationResolvers = {
     const studentExist = await prisma.student.findUnique({
       where: { email },
     });
+
     if (!studentExist) {
       throw new AuthenticationError("Student doesn't exist!");
+    }
+
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email) {
+      throw new AuthenticationError("Not authorized: not a genuine user!");
     }
 
     input.firstName = titleCase(firstName);
@@ -175,16 +191,21 @@ const studentMutations: MutationResolvers = {
     };
 
     const updatedStudent = await prisma.student.update({
-      where: { email },
+      where: { email: loginUserEmail },
       data,
     });
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      studentID: updatedStudent.id,
+      id: updatedStudent.id,
+      email: updatedStudent.email,
+      role: updatedStudent.user,
     });
+    
     const refreshToken = await signRefreshJWToken({
-      studentID: updatedStudent.id,
+      id: updatedStudent.id,
+      email: updatedStudent.email,
+      role: updatedStudent.user,
     });
 
     return {
@@ -197,7 +218,18 @@ const studentMutations: MutationResolvers = {
   },
 
   // DElETE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteStudent: async (_, { emailInput }, { prisma }) => {
+  deleteStudent: async (_, { emailInput }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Student or an Admin
+    if (role !== 'Student' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+      
     const { email } = emailInput;
 
     // Validate Input field
@@ -214,14 +246,21 @@ const studentMutations: MutationResolvers = {
     const studentExist = await prisma.student.findUnique({
       where: { email },
     });
+
     if (!studentExist) {
       throw new AuthenticationError("Student doesn't exist!");
     }
 
+    // Authorized Genuine Login User
+    if (loginUserEmail !== email) {
+      throw new AuthenticationError("Not authorized: not a genuine user!");
+    }
+
     // Delete Student
     const deletedStudent = await prisma.student.delete({
-      where: { email },
+      where: { email: loginUserEmail },
     });
+
     const { id: deletedId, firstName, lastName, matricNo } = deletedStudent;
 
     return {

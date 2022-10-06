@@ -1,6 +1,6 @@
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
-import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { QueryResolvers, ReturnRegisteredCoordinator } from "../../generated";
+import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { validatePassword } from "../../../utils/hashedPwd.util";
 import { LoginInputSchema } from "../../../joi/login.joi";
 
@@ -31,10 +31,15 @@ const coordinatorLogin: QueryResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      coordinatorID: coordinator?.id,
+      id: coordinator.id,
+      email: coordinator.email,
+      role: coordinator.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      coordinatorID: coordinator?.id,
+      id: coordinator.id,
+      email: coordinator.email,
+      role: coordinator.user,
     });
 
     // Remove Password field for security reasons

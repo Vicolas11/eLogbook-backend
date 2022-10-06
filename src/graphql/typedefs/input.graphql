@@ -167,14 +167,13 @@ input DeleteBlogPostInput {
 input EligibleInput {
   level: Level!
   matricNo: String!
-  email1: String!
-  email2: String!
+  email: String!
 }
 
 input UpdateEligibleInput {
   id: ID!
   level: Level!
-  email1: String!
+  email: String!
 }
 
 input DelEligibleInput {

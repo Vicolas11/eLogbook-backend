@@ -1,7 +1,8 @@
 import Joi from "joi";
 
 export const changePswInputSchema = Joi.object({
-  password: Joi.string().min(6).required(),
-  con_password: Joi.ref('password'),
+  id: Joi.string().min(36),
+  password: Joi.string().min(6).required(),  
   new_password: Joi.string().min(6).required(),
-}).with('password', 'con_password');
+  con_password: Joi.ref('new_password'),
+}).with('new_password', 'con_password');

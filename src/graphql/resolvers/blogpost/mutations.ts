@@ -2,11 +2,23 @@ import { BlogPostInputSchema, DelBlogPostInputSchema } from "../../../joi/blogpo
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ReturnBlogPost } from "../../generated";
 import titleCase from "../../../utils/titlecase.utl";
+import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
 
 const blogPostMutations: MutationResolvers = {
   // CREATE BLOGPOST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  blogPost: async (_, { registerInput: input }, { prisma }) => {
+  blogPost: async (_, { registerInput: input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be an Admin
+    if (role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { title: tit } = input;
 
     // Validate Input field
@@ -47,7 +59,18 @@ const blogPostMutations: MutationResolvers = {
   },
 
   // UPDATE BLOGPOST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  updateBlogPost: async (_, { input }, { prisma }) => {
+  updateBlogPost: async (_, { input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+
     const { id, title: tit, content, image } = input;
 
     // Validate Input field
@@ -85,7 +108,18 @@ const blogPostMutations: MutationResolvers = {
   },
 
   // DElETE BLOGPOST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteBlogPost: async (_, { input }, { prisma }) => {
+  deleteBlogPost: async (_, { input }, { prisma, auth }) => {
+    const user = getUser(auth);
+    const { email: loginUserEmail, role } = user;
+
+    // Authenticate user
+    if (!user || loginUserEmail === '' || role === '')
+      throw new AuthenticationError("User not authenticated!");
+
+    // Authorize the user to be either a Coordinator or an Admin
+    if (role !== 'Coordinator' && role !== 'Admin')
+      throw new AuthenticationError("Not authorized!");
+      
     const { id: blogID } = input;
 
     // Validate Input field

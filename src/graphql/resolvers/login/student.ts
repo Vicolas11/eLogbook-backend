@@ -31,10 +31,15 @@ const studentLogin: QueryResolvers = {
 
     // Generate Access and Refreshed Token
     const accessToken = await signAccessJWToken({
-      studentID: student?.id,
+      id: student.id,
+      email: student.email,
+      role: student.user,
     });
+
     const refreshToken = await signRefreshJWToken({
-      studentID: student?.id,
+      id: student.id,
+      email: student.email,
+      role: student.user,
     });
 
     // Remove Password field for security reasons

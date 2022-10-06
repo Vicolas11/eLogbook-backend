@@ -1,3 +1,4 @@
+import { Request } from "express";
 import {
   BlogPost,
   Coordinator,
@@ -30,4 +31,6 @@ export interface IContext {
     };
   };
   prisma: PrismaClient;
+  auth: string;
+  req: Request;
 }

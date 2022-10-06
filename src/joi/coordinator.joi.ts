@@ -17,7 +17,6 @@ export const UpdateCoordinatorInputSchema = Joi.object({
   firstName: Joi.string().min(3).max(50).required(),
   lastName: Joi.string().min(3).max(50).required(),
   phone: Joi.string().min(5),
-  email: Joi.string().min(5).email().required(),
   gender: Joi.string().valid("Male", "Female"),
   avatar: Joi.string().min(30).regex(/[.jpg]$/),
 });

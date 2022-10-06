@@ -1,13 +1,11 @@
 import { constant } from "../configs/constant.config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-const { accessToken, expiresIn, refreshToken, refreshIn } = constant;
+const { secretKey, expiresIn, refreshIn } = constant;
 
-export const signAccessJWToken = async (
-  payload: JwtPayload
-): Promise<string> => {
+export const signAccessJWToken = async(payload: JwtPayload): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
-    jwt.sign(payload, accessToken, { expiresIn: expiresIn }, (error, token) => {
+    jwt.sign(payload, secretKey, { expiresIn: expiresIn }, (error, token) => {
       if (error) reject(error);
       resolve(token as string);
     });
@@ -18,7 +16,7 @@ export const signRefreshJWToken = async (payload: JwtPayload): Promise<string> =
   return new Promise<string>((resolve, reject) => {
     jwt.sign(
       payload,
-      refreshToken,
+      secretKey,
       { expiresIn: refreshIn },
       (error, token) => {
         if (error) reject(error);
@@ -30,7 +28,7 @@ export const signRefreshJWToken = async (payload: JwtPayload): Promise<string> =
 
 export const verifyAccessJWToken = async (token: string): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
-    jwt.verify(token, accessToken, (error, decode) => {
+    jwt.verify(token, secretKey, (error, decode) => {
       if (error) reject(error);
       resolve(decode as string);
     });
@@ -39,7 +37,7 @@ export const verifyAccessJWToken = async (token: string): Promise<string> => {
 
 export const verifyRefreshJWToken = async (token: string): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
-    jwt.verify(token, refreshToken, (error, decode) => {
+    jwt.verify(token, secretKey, (error, decode) => {
       if (error) reject(error);
       resolve(decode as string);
     });

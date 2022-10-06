@@ -350,8 +350,7 @@ export type Eligible = {
 };
 
 export type EligibleInput = {
-  email1: Scalars['String'];
-  email2: Scalars['String'];
+  email: Scalars['String'];
   level: Level;
   matricNo: Scalars['String'];
 };
@@ -975,7 +974,7 @@ export type UpdateCoordinatorInput = {
 };
 
 export type UpdateEligibleInput = {
-  email1: Scalars['String'];
+  email: Scalars['String'];
   id: Scalars['ID'];
   level: Level;
 };

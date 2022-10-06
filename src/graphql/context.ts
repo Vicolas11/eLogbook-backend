@@ -1,5 +1,6 @@
 import { getOrganisationByIDs } from "./data/organisationData";
 import { getCoordinatorByIDs } from "./data/coordinatorData";
+import { IRequest } from "../interfaces/request.interface";
 import { IContext } from "../interfaces/context.interface";
 import { getSupervisorByIDs } from "./data/supervisorData";
 import { getBlogPostByIDs } from "./data/blogpostData";
@@ -75,7 +76,8 @@ const eligibleLoader = () => {
   };
 };
 
-const context: ContextFunction<IContext> = async () => {
+const context: ContextFunction<IContext> = async ({ req }: IRequest) => {
+  const auth = req.headers.authorization || "";
   return {
     loaders: {
       student: studentLoader(),
@@ -86,6 +88,7 @@ const context: ContextFunction<IContext> = async () => {
       eligible: eligibleLoader(),
     },
     prisma,
+    auth: auth,
   };
 };
 
