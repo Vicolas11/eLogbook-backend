@@ -3,13 +3,10 @@ import { startApolloServer } from "./graphql/index.graphql";
 import { envConfig } from "./configs/env.config";
 import cookieParser from "cookie-parser";
 import compression from "compression";
-import { config } from "dotenv";
 import xss from "xss-clean";
 import helmet from "helmet";
 import { join } from "path";
 import cors from "cors";
-
-config();
 
 (async () => {
   // Initialized Express Application

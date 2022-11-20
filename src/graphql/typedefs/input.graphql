@@ -58,6 +58,7 @@ input DeleteStudentInput {
 
 # Supervisor >>>>>>>>>>>>>>>>>>>>>>
 input SupervisorInput {
+  title: Title!
   firstName: String!
   lastName: String!
   staffID: String!
@@ -71,6 +72,7 @@ input SupervisorInput {
 }
 
 input UpdateSupervisorInput {
+  title: Title!
   firstName: String!
   lastName: String!
   email: String!
@@ -85,6 +87,7 @@ input DeleteSupervisorInput {
 
 # Coordinator >>>>>>>>>>>>>>>>>>>>>>
 input CoordinatorInput {
+  title: Title!
   firstName: String!
   lastName: String!
   staffID: String!
@@ -98,6 +101,7 @@ input CoordinatorInput {
 }
 
 input UpdateCoordinatorInput {
+  title: Title!
   firstName: String!
   lastName: String!
   email: String!

@@ -1,12 +1,14 @@
 import { AuthenticationError, ValidationError } from "apollo-server-express";
+import { hashPassword, validatePassword } from "../../utils/hashedPwd.util";
 import { ChangePswResponse, MutationResolvers } from "../generated";
 import { changePswInputSchema } from "../../joi/password.joi";
-import { hashPassword, validatePassword } from "../../utils/hashedPwd.util";
+import { decryptToken } from "../../utils/crypto.utils";
 import getUser from "../../utils/getuser.util";
 
 const changePswMutation: MutationResolvers = {
   changePassword: async (_, { input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { id: loginUserId, role } = user;
 
     // Authenticate user

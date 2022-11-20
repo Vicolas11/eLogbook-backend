@@ -2,8 +2,8 @@ import { AuthenticationError } from "apollo-server-express";
 import { PrismaClient } from "@prisma/client";
 import getUser from "./getuser.util";
 
-export const replicateStudAuth = async(auth: string, id: string, prisma: PrismaClient): Promise<string> => {
-  const user = getUser(auth);
+export const replicateStudAuth = async(token: string, id: string, prisma: PrismaClient): Promise<string> => {
+  const user = getUser(token);
   const { id: loginUserId, role } = user;
 
   // Authenticate user
@@ -28,8 +28,8 @@ export const replicateStudAuth = async(auth: string, id: string, prisma: PrismaC
   return loginUserId;
 };
 
-export const replicateSupAuth = async(auth: string, id: string, prisma: PrismaClient): Promise<string> => {
-  const user = getUser(auth);
+export const replicateSupAuth = async(token: string, id: string, prisma: PrismaClient): Promise<string> => {
+  const user = getUser(token);
   const { id: loginUserId, role } = user;
 
   // Authenticate user
@@ -54,8 +54,8 @@ export const replicateSupAuth = async(auth: string, id: string, prisma: PrismaCl
   return loginUserId;
 };
 
-export const replicateCoordAuth = async(auth: string, id: string, prisma: PrismaClient): Promise<string> => {
-  const user = getUser(auth);
+export const replicateCoordAuth = async(token: string, id: string, prisma: PrismaClient): Promise<string> => {
+  const user = getUser(token);
   const { id: loginUserId, role } = user;
 
   // Authenticate user
@@ -80,8 +80,8 @@ export const replicateCoordAuth = async(auth: string, id: string, prisma: Prisma
   return loginUserId;
 };
 
-export const replicateOrgAuth = async(auth: string, id: string, prisma: PrismaClient): Promise<string> => {
-  const user = getUser(auth);
+export const replicateOrgAuth = async(token: string, id: string, prisma: PrismaClient): Promise<string> => {
+  const user = getUser(token);
   const { id: loginUserId, role } = user;
 
   // Authenticate user
@@ -106,8 +106,9 @@ export const replicateOrgAuth = async(auth: string, id: string, prisma: PrismaCl
   return loginUserId;
 };
 
-export const replicateAdminAuth = (auth: string): void => {
-  const user = getUser(auth);
+export const replicateAdminAuth = (token: string): void => {
+  
+  const user = getUser(token);
   const { email, role } = user;
 
   // Authenticate user

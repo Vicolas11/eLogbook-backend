@@ -2,8 +2,10 @@ import { AuthenticationError, UserInputError, ValidationError } from "apollo-ser
 import { FileInputSchema, FileUpdateInputSchema } from "../../joi/uploadfile.joi";
 import { MutationResolvers, UploadResponse } from "../generated";
 import readStreamFile from "../../utils/readStream.util";
+import { decryptToken } from "../../utils/crypto.utils";
 import deleteFile from "../../utils/deletefile.utils";
 import getUser from "../../utils/getuser.util";
+import { envConfig } from "../../configs/env.config";
 
 const uploadFileMutation: MutationResolvers = {
   // CREATE UPDATE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -41,8 +43,10 @@ const uploadFileMutation: MutationResolvers = {
 
   // UPDATE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateFile: async (_, { updateInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { id: loginUserId, role } = user;
+    const { port, dev, url, default_img } = envConfig;
 
     // Authenticate user
     if (!user || loginUserId === "" || role === "")
@@ -66,7 +70,7 @@ const uploadFileMutation: MutationResolvers = {
     });
     const getFile = await file;
 
-    if (!userExist) throw new AuthenticationError("User doen't exist!");
+    if (!userExist) throw new AuthenticationError("User doesn't exist!");
 
     if (!getFile) throw new AuthenticationError("Uploaded an empty file!");
 
@@ -75,7 +79,7 @@ const uploadFileMutation: MutationResolvers = {
 
     const imageURL = await readStreamFile({
       file: file,
-      oldImgURL: userExist?.avatar || "",
+      oldImgURL: (userExist?.avatar === default_img) ? "" : (userExist?.avatar || ""),
       action: "update",
       subpath: type,
     });
@@ -89,7 +93,8 @@ const uploadFileMutation: MutationResolvers = {
 
   // DELETE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteFile: async (_, { deleteInput: id }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { id: loginUserId, role } = user;
 
     // Authenticate user

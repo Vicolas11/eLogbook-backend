@@ -2,6 +2,7 @@ import { AuthenticationError } from "apollo-server-express";
 import { Organisation } from "@prisma/client";
 import { prisma } from "../context";
 
+
 export const getAllOrganisations = async (): Promise<Organisation[]> => {
   const organisations = await prisma.organisation.findMany({
     include: {

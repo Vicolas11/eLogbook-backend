@@ -3,20 +3,14 @@ import { AuthenticationError } from "apollo-server-express";
 import { constant } from "../configs/constant.config";
 import jwt from "jsonwebtoken";
 
-const getUser = (auth: string) => {
+const getUser = (token: string) => {
   const { secretKey } = constant;
   let id = "";
   let email = "";
   let role = "";
 
-  if (!auth || auth === "")
-    throw new AuthenticationError("Not authentication!");
-
-  const bearer = auth.split(" ")[0];
-  const token = auth.split(" ")[1];
-
-  if ((bearer !== "Bearer" && bearer !== "Token") || token === "")
-    throw new AuthenticationError("Not authentication!");
+  if (!token || token === "")
+    throw new AuthenticationError("Not tokenentication!");
 
   try {
     const decode = jwt.verify(token, secretKey) as IJWTCustom;

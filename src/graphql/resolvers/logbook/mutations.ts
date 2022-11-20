@@ -1,13 +1,15 @@
 import { DelLogbookInputSchema, LogbookInputSchema, UpdateLogbookInputSchema } from "../../../joi/logbook.joi";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ResponseLogbook } from "../../generated";
+import { decryptToken } from "../../../utils/crypto.utils";
 import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
 
 const logbookMutations: MutationResolvers = {
   // CREATE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   logbook: async (_, { input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -76,7 +78,8 @@ const logbookMutations: MutationResolvers = {
   },
   // UPDATE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateLogbook: async (_, { input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -145,7 +148,8 @@ const logbookMutations: MutationResolvers = {
   },
   // DELETE LOGBOOK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteLogbook: async (_, { input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user

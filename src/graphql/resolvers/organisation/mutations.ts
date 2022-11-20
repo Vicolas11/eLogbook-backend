@@ -2,6 +2,7 @@ import { DelOrganisationInputSchema, OrganisationInputSchema, UpdateOrganisation
 import { DeletedOrganisation, MutationResolvers, ReturnRegisteredOrganisation } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
+import { decryptToken, encryptToken } from "../../../utils/crypto.utils";
 import { hashPassword } from "../../../utils/hashedPwd.util";
 import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
@@ -58,18 +59,22 @@ const organisationMutations: MutationResolvers = {
       role: newOrganisation.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Created organisation successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       organisation: newOrganisation,
     } as ReturnRegisteredOrganisation;
   },
 
   // UPDATE ORGANISATION USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateOrganisation: async (_, { updateInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -132,18 +137,22 @@ const organisationMutations: MutationResolvers = {
       role: updatedOrganisation.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Updated organisation successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       organisation: updatedOrganisation,
     } as ReturnRegisteredOrganisation;
   },
 
   // DElETE ORGANISATION USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteOrganisation: async (_, { emailInput }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user

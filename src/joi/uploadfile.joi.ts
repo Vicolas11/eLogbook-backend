@@ -1,13 +1,15 @@
 import Joi from "joi";
 
 export const FileInputSchema = Joi.object({
+  file: Joi.any(),
   type: Joi.string()
     .valid("logo", "chats", "avatar", "diagrams", "blogposts")
     .required(),
 });
 
 export const FileUpdateInputSchema = Joi.object({
-  id: Joi.string().min(5).required(),
+  id: Joi.string().min(36).required(),
+  file: Joi.any(),
   type: Joi.string()
     .valid("logo", "chats", "avatar", "diagrams", "blogposts")
     .required(),

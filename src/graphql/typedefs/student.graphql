@@ -53,7 +53,7 @@ type DeletedStudent {
 type ReturnRegisteredStudent implements Token {
   status: Int!
   message: String!
-  accessToken: JWT!
-  refreshToken: JWT!
+  accessToken: String!
+  refreshToken: String!
   student: RegisteredStudent!
 }

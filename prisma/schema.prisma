@@ -8,7 +8,10 @@ generator joi {
 
 generator erd {
   provider = "prisma-erd-generator"
-  output   = "./erd/erd.svg"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
 }
 
 generator client {
@@ -38,6 +41,14 @@ enum User {
   Coordinator
   Supervisor
   Organisation
+}
+
+enum Title {
+  Prof @map("Professor")
+  Dr @map("Doctor")  
+  Mr
+  Mrs
+  Miss
 }
 
 enum Label {
@@ -77,7 +88,7 @@ model Student {
   firstName      String
   lastName       String
   matricNo       String        @unique
-  phone          String
+  phone          String        @unique
   address        String?
   institute      String
   department     String
@@ -86,7 +97,7 @@ model Student {
   place          String
   email          String        @unique
   password       String
-  avatar         String
+  avatar         String        @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
   eligible       Boolean?      @default(false)
   user           User          @default(Student)
   supervisor     Supervisor?   @relation(fields: [supervisorId], references: [id])
@@ -101,17 +112,18 @@ model Student {
 
 model Supervisor {
   id            String       @id @default(uuid())
+  title         Title
   firstName     String
   lastName      String
   staffID       String
-  phone         String
+  phone         String      @unique
   institute     String
   department    String
   gender        Gender?
   email         String       @unique
   password      String
-  avatar        String?
-  user          User         @default(Supervisor)
+  avatar        String?     @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
+  user          User        @default(Supervisor)
   students      Student[]
   coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
   joinedDate    DateTime     @default(now())
@@ -121,16 +133,17 @@ model Supervisor {
 
 model Coordinator {
   id          String       @id @default(uuid())
+  title       Title
   firstName   String
   lastName    String
   staffID     String
-  phone       String
+  phone       String      @unique
   institute   String
   department  String
   gender      Gender?
   email       String       @unique
   password    String
-  avatar      String?
+  avatar      String?      @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
   user        User         @default(Coordinator)
   students    Student[]
   supervisors Supervisor[]
@@ -142,7 +155,7 @@ model Organisation {
   id         String    @id @default(uuid())
   name       String
   sector     Sector
-  phone      String
+  phone      String   @unique
   address    String
   employees  Int
   email      String    @unique

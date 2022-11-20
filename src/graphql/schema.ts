@@ -10,4 +10,5 @@ const typeDefsArray: string[] = loadFilesSync(`${path}/**/*.graphql`);
 // Merge all the .graphql files into an Array
 const typeDefs = mergeTypeDefs([...typeDefsArray, ...scalarsTypeDefs]);
 const schema = makeExecutableSchema({ typeDefs, resolvers});
+// console.log(schema)
 export default schema;

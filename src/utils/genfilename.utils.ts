@@ -4,23 +4,29 @@ const generateUniqueFilename = (type: string): string => {
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
   const time = date.getTime();
+  let ty: string = '';
   switch (type) {
     case "avatar":
-      type = "AVT";
+      ty = "AVT";
+      break;
     case "diagrams":
-      type = "DIA";
+      ty = "DIA";
+      break;
     case "blogposts":
-      type = "BLO";
+      ty = "BLO";
+      break;
     case "chats":
-      type = "IMG";
+      ty = "IMG";
+      break;
     case "logo":
-      type = "LOG";
+      ty = "LOG";
+      break;
     default:
-      type = "";
+      ty = "";
   }
   const fullDay = day >= 10 ? day : "0" + `${day}`;
   const fullMonth = month >= 10 ? month : "0" + `${month}`;
-  const genDate = `${type}-${year}${fullMonth}${fullDay}-${time}.jpg`;
+  const genDate = `${ty}-${year}${fullMonth}${fullDay}-${time}.jpg`;
 
   return genDate;
 };

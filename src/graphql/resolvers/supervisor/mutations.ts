@@ -2,6 +2,7 @@ import { DelSupervisorInputSchema, SupervisorInputSchema, UpdateSupervisorInputS
 import { DeletedSupervisor, MutationResolvers, ReturnRegisteredSupervisor } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
+import { decryptToken, encryptToken } from "../../../utils/crypto.utils";
 import { hashPassword } from "../../../utils/hashedPwd.util";
 import titleCase from "../../../utils/titlecase.utl";
 import getUser from "../../../utils/getuser.util";
@@ -59,6 +60,7 @@ const supervisorMutations: MutationResolvers = {
       ...input,
       id: uuid(),
     };
+    
     const newSupervisor = await prisma.supervisor.create({
       data: {
         ...supervisorData,
@@ -86,18 +88,22 @@ const supervisorMutations: MutationResolvers = {
       role: newSupervisor.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Created supervisor successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       supervisor: newSupervisor,
     } as ReturnRegisteredSupervisor;
   },
 
   // UPDATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateSupervisor: async (_, { updateInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -108,7 +114,7 @@ const supervisorMutations: MutationResolvers = {
     if (role !== 'Supervisor' && role !== 'Admin')
       throw new AuthenticationError("Not authorized!");
 
-    const { email, firstName, lastName, phone, gender, avatar } = input;
+    const { title, email, firstName, lastName, phone, gender, avatar } = input;
 
     // Validate Input field
     const validate = UpdateSupervisorInputSchema.validate(input);
@@ -138,6 +144,7 @@ const supervisorMutations: MutationResolvers = {
 
     // Update Supervisor User
     const data = {
+      title,
       firstName,
       lastName,
       phone,
@@ -174,7 +181,8 @@ const supervisorMutations: MutationResolvers = {
 
   // DElETE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteSupervisor: async (_, { emailInput }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user

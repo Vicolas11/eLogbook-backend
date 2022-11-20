@@ -1,0 +1,196 @@
+erDiagram
+
+        Level {
+            ND1 ND1
+NC2 NC2
+L3 300
+L4 400
+        }
+    
+
+
+        Gender {
+            Male Male
+Female Female
+        }
+    
+
+
+        User {
+            Admin Admin
+Student Student
+Coordinator Coordinator
+Supervisor Supervisor
+Organisation Organisation
+        }
+    
+
+
+        Label {
+            indigo indigo
+gray gray
+green green
+blue blue
+red red
+        }
+    
+
+
+        Sector {
+            ICT Information Technology
+Healthcare Healthcare
+Agriculture Agriculture
+Transportation Transportation
+Energy Energy
+Commercial Commercial
+Financial Financial Services
+Aviation Aviation
+Construction Construction
+Manufacturing Manufacturing
+Education Education And Training
+Fashion Fashion
+Logistics Logistics
+Tourism Tourism
+Telecommunication Telecommunication
+Entertainment Entertainment
+Legal Legal Services
+Consultancy Consultancy
+Religion Religion
+Oil Oil And Gas
+Others Others
+        }
+    
+  Student {
+    String id PK 
+    String firstName  
+    String lastName  
+    String matricNo  
+    String phone  
+    String address  "nullable"
+    String institute  
+    String department  
+    Level level  "nullable"
+    Gender gender  "nullable"
+    String place  
+    String email  
+    String password  
+    String avatar  
+    Boolean eligible  "nullable"
+    User user  
+    DateTime joinedDate  
+    }
+  
+
+  Supervisor {
+    String id PK 
+    String title  
+    String firstName  
+    String lastName  
+    String staffID  
+    String phone  
+    String institute  
+    String department  
+    Gender gender  "nullable"
+    String email  
+    String password  
+    String avatar  "nullable"
+    User user  
+    DateTime joinedDate  
+    }
+  
+
+  Coordinator {
+    String id PK 
+    String title  
+    String firstName  
+    String lastName  
+    String staffID  
+    String phone  
+    String institute  
+    String department  
+    Gender gender  "nullable"
+    String email  
+    String password  
+    String avatar  "nullable"
+    User user  
+    DateTime joinedDate  
+    }
+  
+
+  Organisation {
+    String id PK 
+    String name  
+    Sector sector  
+    String phone  
+    String address  
+    Int employees  
+    String email  
+    String password  
+    String logo  
+    User user  
+    DateTime joinedDate  
+    }
+  
+
+  Admin {
+    String id PK 
+    String firstName  
+    String lastName  
+    String email  
+    String password  
+    String avatar  "nullable"
+    User user  
+    DateTime joinedDate  
+    }
+  
+
+  BlogPost {
+    String id PK 
+    String title  
+    String content  
+    String image  
+    DateTime createdAt  "nullable"
+    DateTime updateAt  "nullable"
+    }
+  
+
+  Eligible {
+    String id PK 
+    String institute  
+    String department  
+    Level level  
+    String matricNo  
+    DateTime createdAt  "nullable"
+    }
+  
+
+  Logbook {
+    String id PK 
+    DateTime day  "nullable"
+    String title  
+    String description  
+    Label label  
+    String diagram  "nullable"
+    Boolean approved  "nullable"
+    DateTime createdAt  "nullable"
+    }
+  
+    Student o|--|o Level : "enum:level"
+    Student o|--|o Gender : "enum:gender"
+    Student o|--|| User : "enum:user"
+    Student o{--|o Supervisor : "supervisor"
+    Student o{--|o Coordinator : "coordinator"
+    Student o{--|o Organisation : "organisation"
+    Supervisor o|--|o Gender : "enum:gender"
+    Supervisor o|--|| User : "enum:user"
+    Supervisor o{--|o Coordinator : "coordinator"
+    Coordinator o|--|o Gender : "enum:gender"
+    Coordinator o|--|| User : "enum:user"
+    Organisation o|--|| Sector : "enum:sector"
+    Organisation o|--|| User : "enum:user"
+    Admin o|--|| User : "enum:user"
+    Eligible o|--|| Level : "enum:level"
+    Eligible o{--|o Supervisor : "supervisor"
+    Eligible o{--|o Coordinator : "coordinator"
+    Logbook o|--|| Label : "enum:label"
+    Logbook o{--|o Student : "student"

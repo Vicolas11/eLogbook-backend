@@ -20,7 +20,7 @@ type RegisteredAdmin {
 }
 
 type ReturnRegisteredAdmin implements Token {
-  accessToken: JWT!
-  refreshToken: JWT!
+  accessToken: String!
+  refreshToken: String!
   admin: RegisteredAdmin!
 }

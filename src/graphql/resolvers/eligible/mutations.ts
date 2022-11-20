@@ -1,6 +1,7 @@
 import { DelEligibleInputSchema, EligibleInputSchema, UpdateEligibleInputSchema } from "../../../joi/eligible.joi";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ReturnRegisterEligible } from "../../generated";
+import { decryptToken } from "../../../utils/crypto.utils";
 import { Eligible, Prisma } from "@prisma/client";
 import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
@@ -8,7 +9,8 @@ import { v4 as uuid } from "uuid";
 const eligibleMutations: MutationResolvers = {
   // CREATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   eligible: async (_, { registerInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email, role } = user;
 
     // Authenticate user
@@ -121,7 +123,8 @@ const eligibleMutations: MutationResolvers = {
 
   // UPDATE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateEligible: async (_, { updateInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { id: loginUserId, email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -202,7 +205,8 @@ const eligibleMutations: MutationResolvers = {
 
   // DElETE ELIGIBLE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteEligible: async (_, { deleteInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { id: loginUserId, email: loginUserEmail, role } = user;
 
     // Authenticate user

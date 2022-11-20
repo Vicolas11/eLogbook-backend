@@ -42,7 +42,7 @@ const readStreamFile = async (args: IReadStream): Promise<string> => {
     const imgURL = oldImgURL?.split("/");
     const lastIdx = imgURL?.length - 1;
     const filepath = imgURL[lastIdx];
-    const isRemoved = await fileRemover({filepath, subpath});
+    const isRemoved = await fileRemover({ filepath, subpath });
     // If file is successfully deleted, then update!
     if (isRemoved) {
       const UPDATED_URL = `/${subpath}/${unqueFilename}`;

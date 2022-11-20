@@ -7,6 +7,7 @@ const ENV = (process.env.NODE_ENV as string) || "development";
 
 export const envConfig: IEnvConfig = {
   url: process.env.BASE_URL as string,
+  default_img: process.env.DEFAULT_IMG as string,
   port: +(process.env.APP_PORT as unknown as number) || 8080,
   dev: ENV === "development",
   prod: ENV === "production",

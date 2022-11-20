@@ -2,6 +2,7 @@ import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { QueryResolvers, ReturnRegisteredOrganisation } from "../../generated";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { validatePassword } from "../../../utils/hashedPwd.util";
+import { encryptToken } from "../../../utils/crypto.utils";
 import { LoginInputSchema } from "../../../joi/login.joi";
 
 const organisationLogin: QueryResolvers = {
@@ -45,11 +46,14 @@ const organisationLogin: QueryResolvers = {
     // Remove Password field for security reasons
     Reflect.deleteProperty(organisation, "password");
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Login successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       organisation,
     } as ReturnRegisteredOrganisation;
   },

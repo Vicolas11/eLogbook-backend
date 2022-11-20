@@ -2,6 +2,7 @@ import { DelCoordinatorInputSchema, CoordinatorInputSchema, UpdateCoordinatorInp
 import { DeletedCoordinator, MutationResolvers, ReturnRegisteredCoordinator } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
+import { decryptToken, encryptToken } from "../../../utils/crypto.utils";
 import { hashPassword } from "../../../utils/hashedPwd.util";
 import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
@@ -68,18 +69,22 @@ const coordinatorMutations: MutationResolvers = {
       role: newCoordinator.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Created coordinator successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       coordinator: newCoordinator,
     } as ReturnRegisteredCoordinator;
   },
 
   // UPDATE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateCoordinator: async (_, { updateInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -90,7 +95,7 @@ const coordinatorMutations: MutationResolvers = {
     if (role !== 'Coordinator' && role !== 'Admin')
       throw new AuthenticationError("Not authorized!");
 
-    const { firstName, lastName, phone, gender, avatar, email } = input;
+    const { title, firstName, lastName, phone, gender, avatar, email } = input;
 
     // Validate Input field
     const validate = UpdateCoordinatorInputSchema.validate(input);
@@ -118,6 +123,7 @@ const coordinatorMutations: MutationResolvers = {
 
     // Update Coordinator User
     const updateCoordinatorData = {
+      title,
       firstName,
       lastName,
       phone,
@@ -143,18 +149,22 @@ const coordinatorMutations: MutationResolvers = {
       role: updatedCoordinator.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Updated coordinator successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       coordinator: updatedCoordinator,
     } as ReturnRegisteredCoordinator;
   },
 
   // DElETE COORDINATOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteCoordinator: async (_, { emailInput }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user

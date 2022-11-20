@@ -1,6 +1,7 @@
 import { BlogPostInputSchema, DelBlogPostInputSchema } from "../../../joi/blogpost.joi";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { MutationResolvers, ReturnBlogPost } from "../../generated";
+import { decryptToken } from "../../../utils/crypto.utils";
 import titleCase from "../../../utils/titlecase.utl";
 import getUser from "../../../utils/getuser.util";
 import { v4 as uuid } from "uuid";
@@ -8,7 +9,8 @@ import { v4 as uuid } from "uuid";
 const blogPostMutations: MutationResolvers = {
   // CREATE BLOGPOST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   blogPost: async (_, { registerInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -60,7 +62,8 @@ const blogPostMutations: MutationResolvers = {
 
   // UPDATE BLOGPOST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateBlogPost: async (_, { input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -109,7 +112,8 @@ const blogPostMutations: MutationResolvers = {
 
   // DElETE BLOGPOST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteBlogPost: async (_, { input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user

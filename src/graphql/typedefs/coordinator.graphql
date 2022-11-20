@@ -1,5 +1,6 @@
 type Coordinator {
   id: ID!
+  title: Title!
   firstName: String
   lastName: String
   staffID: String
@@ -18,6 +19,7 @@ type Coordinator {
 
 type RegisteredCoordinator {
   id: ID!
+  title: Title!
   firstName: String
   lastName: String
   staffID: String
@@ -33,6 +35,7 @@ type RegisteredCoordinator {
 
 type DeletedCoordinator {
   id: ID!
+  title: Title!
   firstName: String
   lastName: String
   staffID: String
@@ -43,7 +46,7 @@ type DeletedCoordinator {
 type ReturnRegisteredCoordinator implements Token {
   status: Int!
   message: String!
-  accessToken: JWT!
-  refreshToken: JWT!
+  accessToken: String!
+  refreshToken: String!
   coordinator: RegisteredCoordinator!
 }

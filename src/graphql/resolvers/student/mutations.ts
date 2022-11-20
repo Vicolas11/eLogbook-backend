@@ -2,6 +2,7 @@ import { DelStudentInputSchema, StudentInputSchema, UpdateStudentInputSchema } f
 import { DeletedStudent, MutationResolvers, ReturnRegisteredStudent } from "../../generated";
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
+import { decryptToken, encryptToken } from "../../../utils/crypto.utils";
 import { hashPassword } from "../../../utils/hashedPwd.util";
 import titleCase from "../../../utils/titlecase.utl";
 import getUser from "../../../utils/getuser.util";
@@ -118,18 +119,22 @@ const studentMutations: MutationResolvers = {
       role: newStudent.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Created student successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       student: newStudent,
     } as ReturnRegisteredStudent;
   },
 
   // UPDATE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   updateStudent: async (_, { updateInput: input }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user
@@ -219,7 +224,8 @@ const studentMutations: MutationResolvers = {
 
   // DElETE STUDENT USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   deleteStudent: async (_, { emailInput }, { prisma, auth }) => {
-    const user = getUser(auth);
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
     const { email: loginUserEmail, role } = user;
 
     // Authenticate user

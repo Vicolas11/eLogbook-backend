@@ -252,6 +252,7 @@ export type Coordinator = {
   staffID?: Maybe<Scalars['String']>;
   students?: Maybe<Array<Maybe<Student>>>;
   supervisors?: Maybe<Array<Maybe<Supervisor>>>;
+  title: Title;
   user: User;
 };
 
@@ -266,6 +267,7 @@ export type CoordinatorInput = {
   password: Scalars['String'];
   phone: Scalars['String'];
   staffID: Scalars['String'];
+  title: Title;
 };
 
 export type DelEligibleInput = {
@@ -305,6 +307,7 @@ export type DeletedCoordinator = {
   message?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['Int']>;
+  title: Title;
 };
 
 export type DeletedOrganisation = {
@@ -335,6 +338,7 @@ export type DeletedSupervisor = {
   message?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
   status?: Maybe<Scalars['Int']>;
+  title?: Maybe<Title>;
 };
 
 export type Eligible = {
@@ -378,6 +382,13 @@ export enum Gender {
   Female = 'Female',
   Male = 'Male'
 }
+
+export type JwtBox = {
+  __typename?: 'JWTBox';
+  value?: Maybe<Scalars['JWT']>;
+};
+
+export type JwToken = JwtBox | StringBox;
 
 export enum Label {
   Blue = 'blue',
@@ -715,6 +726,7 @@ export type RegisteredCoordinator = {
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
+  title: Title;
   user?: Maybe<User>;
 };
 
@@ -765,6 +777,7 @@ export type RegisteredSupervisor = {
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
+  title?: Maybe<Title>;
   user?: Maybe<User>;
 };
 
@@ -803,43 +816,43 @@ export type ReturnRegisterEligible = {
 
 export type ReturnRegisteredAdmin = Token & {
   __typename?: 'ReturnRegisteredAdmin';
-  accessToken: Scalars['JWT'];
+  accessToken: Scalars['String'];
   admin: RegisteredAdmin;
-  refreshToken: Scalars['JWT'];
+  refreshToken: Scalars['String'];
 };
 
 export type ReturnRegisteredCoordinator = Token & {
   __typename?: 'ReturnRegisteredCoordinator';
-  accessToken: Scalars['JWT'];
+  accessToken: Scalars['String'];
   coordinator: RegisteredCoordinator;
   message: Scalars['String'];
-  refreshToken: Scalars['JWT'];
+  refreshToken: Scalars['String'];
   status: Scalars['Int'];
 };
 
 export type ReturnRegisteredOrganisation = Token & {
   __typename?: 'ReturnRegisteredOrganisation';
-  accessToken: Scalars['JWT'];
+  accessToken: Scalars['String'];
   message: Scalars['String'];
   organisation: RegisteredOrganisation;
-  refreshToken: Scalars['JWT'];
+  refreshToken: Scalars['String'];
   status: Scalars['Int'];
 };
 
 export type ReturnRegisteredStudent = Token & {
   __typename?: 'ReturnRegisteredStudent';
-  accessToken: Scalars['JWT'];
+  accessToken: Scalars['String'];
   message: Scalars['String'];
-  refreshToken: Scalars['JWT'];
+  refreshToken: Scalars['String'];
   status: Scalars['Int'];
   student: RegisteredStudent;
 };
 
 export type ReturnRegisteredSupervisor = Token & {
   __typename?: 'ReturnRegisteredSupervisor';
-  accessToken: Scalars['JWT'];
+  accessToken: Scalars['String'];
   message: Scalars['String'];
-  refreshToken: Scalars['JWT'];
+  refreshToken: Scalars['String'];
   status: Scalars['Int'];
   supervisor: RegisteredSupervisor;
 };
@@ -878,6 +891,11 @@ export enum Sector {
   Tourism = 'Tourism',
   Transportation = 'Transportation'
 }
+
+export type StringBox = {
+  __typename?: 'StringBox';
+  value?: Maybe<Scalars['String']>;
+};
 
 export type Student = {
   __typename?: 'Student';
@@ -936,6 +954,7 @@ export type Supervisor = {
   phone?: Maybe<Scalars['String']>;
   staffID?: Maybe<Scalars['String']>;
   students?: Maybe<Array<Maybe<Student>>>;
+  title?: Maybe<Title>;
   user?: Maybe<User>;
 };
 
@@ -950,11 +969,20 @@ export type SupervisorInput = {
   password: Scalars['String'];
   phone: Scalars['String'];
   staffID: Scalars['String'];
+  title: Title;
 };
 
+export enum Title {
+  Dr = 'Dr',
+  Miss = 'Miss',
+  Mr = 'Mr',
+  Mrs = 'Mrs',
+  Prof = 'Prof'
+}
+
 export type Token = {
-  accessToken: Scalars['JWT'];
-  refreshToken: Scalars['JWT'];
+  accessToken: Scalars['String'];
+  refreshToken: Scalars['String'];
 };
 
 export type UpdateBlogPostInput = {
@@ -971,6 +999,7 @@ export type UpdateCoordinatorInput = {
   gender?: InputMaybe<Gender>;
   lastName: Scalars['String'];
   phone: Scalars['String'];
+  title: Title;
 };
 
 export type UpdateEligibleInput = {
@@ -1017,6 +1046,7 @@ export type UpdateSupervisorInput = {
   gender?: InputMaybe<Gender>;
   lastName: Scalars['String'];
   phone: Scalars['String'];
+  title: Title;
 };
 
 export type UploadResponse = {
@@ -1156,6 +1186,8 @@ export type ResolversTypes = {
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   JWT: ResolverTypeWrapper<Scalars['JWT']>;
+  JWTBox: ResolverTypeWrapper<JwtBox>;
+  JWToken: ResolversTypes['JWTBox'] | ResolversTypes['StringBox'];
   Label: Label;
   Latitude: ResolverTypeWrapper<Scalars['Latitude']>;
   Level: Level;
@@ -1207,6 +1239,7 @@ export type ResolversTypes = {
   SafeInt: ResolverTypeWrapper<Scalars['SafeInt']>;
   Sector: Sector;
   String: ResolverTypeWrapper<Scalars['String']>;
+  StringBox: ResolverTypeWrapper<StringBox>;
   Student: ResolverTypeWrapper<Student>;
   StudentInput: StudentInput;
   Supervisor: ResolverTypeWrapper<Supervisor>;
@@ -1214,6 +1247,7 @@ export type ResolversTypes = {
   Time: ResolverTypeWrapper<Scalars['Time']>;
   TimeZone: ResolverTypeWrapper<Scalars['TimeZone']>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
+  Title: Title;
   Token: ResolversTypes['ReturnRegisteredAdmin'] | ResolversTypes['ReturnRegisteredCoordinator'] | ResolversTypes['ReturnRegisteredOrganisation'] | ResolversTypes['ReturnRegisteredStudent'] | ResolversTypes['ReturnRegisteredSupervisor'];
   URL: ResolverTypeWrapper<Scalars['URL']>;
   USCurrency: ResolverTypeWrapper<Scalars['USCurrency']>;
@@ -1287,6 +1321,8 @@ export type ResolversParentTypes = {
   JSON: Scalars['JSON'];
   JSONObject: Scalars['JSONObject'];
   JWT: Scalars['JWT'];
+  JWTBox: JwtBox;
+  JWToken: ResolversParentTypes['JWTBox'] | ResolversParentTypes['StringBox'];
   Latitude: Scalars['Latitude'];
   LocalDate: Scalars['LocalDate'];
   LocalEndTime: Scalars['LocalEndTime'];
@@ -1335,6 +1371,7 @@ export type ResolversParentTypes = {
   RoutingNumber: Scalars['RoutingNumber'];
   SafeInt: Scalars['SafeInt'];
   String: Scalars['String'];
+  StringBox: StringBox;
   Student: Student;
   StudentInput: StudentInput;
   Supervisor: Supervisor;
@@ -1423,6 +1460,7 @@ export type CoordinatorResolvers<ContextType = IContext, ParentType extends Reso
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   students?: Resolver<Maybe<Array<Maybe<ResolversTypes['Student']>>>, ParentType, ContextType>;
   supervisors?: Resolver<Maybe<Array<Maybe<ResolversTypes['Supervisor']>>>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['Title'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1458,6 +1496,7 @@ export type DeletedCoordinatorResolvers<ContextType = IContext, ParentType exten
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['Title'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1488,6 +1527,7 @@ export type DeletedSupervisorResolvers<ContextType = IContext, ParentType extend
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['Title']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1562,6 +1602,15 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 export interface JwtScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JWT'], any> {
   name: 'JWT';
 }
+
+export type JwtBoxResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['JWTBox'] = ResolversParentTypes['JWTBox']> = {
+  value?: Resolver<Maybe<ResolversTypes['JWT']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type JwTokenResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['JWToken'] = ResolversParentTypes['JWToken']> = {
+  __resolveType: TypeResolveFn<'JWTBox' | 'StringBox', ParentType, ContextType>;
+};
 
 export interface LatitudeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Latitude'], any> {
   name: 'Latitude';
@@ -1758,6 +1807,7 @@ export type RegisteredCoordinatorResolvers<ContextType = IContext, ParentType ex
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['Title'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1808,6 +1858,7 @@ export type RegisteredSupervisorResolvers<ContextType = IContext, ParentType ext
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['Title']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1846,43 +1897,43 @@ export type ReturnRegisterEligibleResolvers<ContextType = IContext, ParentType e
 };
 
 export type ReturnRegisteredAdminResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredAdmin'] = ResolversParentTypes['ReturnRegisteredAdmin']> = {
-  accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   admin?: Resolver<ResolversTypes['RegisteredAdmin'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ReturnRegisteredCoordinatorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredCoordinator'] = ResolversParentTypes['ReturnRegisteredCoordinator']> = {
-  accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   coordinator?: Resolver<ResolversTypes['RegisteredCoordinator'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ReturnRegisteredOrganisationResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredOrganisation'] = ResolversParentTypes['ReturnRegisteredOrganisation']> = {
-  accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organisation?: Resolver<ResolversTypes['RegisteredOrganisation'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ReturnRegisteredStudentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredStudent'] = ResolversParentTypes['ReturnRegisteredStudent']> = {
-  accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   student?: Resolver<ResolversTypes['RegisteredStudent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ReturnRegisteredSupervisorResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredSupervisor'] = ResolversParentTypes['ReturnRegisteredSupervisor']> = {
-  accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   supervisor?: Resolver<ResolversTypes['RegisteredSupervisor'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1906,6 +1957,11 @@ export interface RoutingNumberScalarConfig extends GraphQLScalarTypeConfig<Resol
 export interface SafeIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['SafeInt'], any> {
   name: 'SafeInt';
 }
+
+export type StringBoxResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['StringBox'] = ResolversParentTypes['StringBox']> = {
+  value?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type StudentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Student'] = ResolversParentTypes['Student']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1947,6 +2003,7 @@ export type SupervisorResolvers<ContextType = IContext, ParentType extends Resol
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   staffID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   students?: Resolver<Maybe<Array<Maybe<ResolversTypes['Student']>>>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['Title']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1965,8 +2022,8 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
 
 export type TokenResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = {
   __resolveType: TypeResolveFn<'ReturnRegisteredAdmin' | 'ReturnRegisteredCoordinator' | 'ReturnRegisteredOrganisation' | 'ReturnRegisteredStudent' | 'ReturnRegisteredSupervisor', ParentType, ContextType>;
-  accessToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['JWT'], ParentType, ContextType>;
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
@@ -2043,6 +2100,8 @@ export type Resolvers<ContextType = IContext> = {
   JSON?: GraphQLScalarType;
   JSONObject?: GraphQLScalarType;
   JWT?: GraphQLScalarType;
+  JWTBox?: JwtBoxResolvers<ContextType>;
+  JWToken?: JwTokenResolvers<ContextType>;
   Latitude?: GraphQLScalarType;
   LocalDate?: GraphQLScalarType;
   LocalEndTime?: GraphQLScalarType;
@@ -2087,6 +2146,7 @@ export type Resolvers<ContextType = IContext> = {
   ReturnedEligible?: ReturnedEligibleResolvers<ContextType>;
   RoutingNumber?: GraphQLScalarType;
   SafeInt?: GraphQLScalarType;
+  StringBox?: StringBoxResolvers<ContextType>;
   Student?: StudentResolvers<ContextType>;
   Supervisor?: SupervisorResolvers<ContextType>;
   Time?: GraphQLScalarType;

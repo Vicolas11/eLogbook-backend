@@ -38,7 +38,7 @@ type DeletedOrganisation {
 type ReturnRegisteredOrganisation implements Token {
   status: Int!
   message: String!
-  accessToken: JWT!
-  refreshToken: JWT!
+  accessToken: String!
+  refreshToken: String!
   organisation: RegisteredOrganisation!
 }

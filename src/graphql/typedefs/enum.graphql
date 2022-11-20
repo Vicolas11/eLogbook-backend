@@ -50,6 +50,14 @@ enum FileDir {
   blogposts
 }
 
+enum Title {
+  Prof
+  Dr
+  Mr
+  Mrs
+  Miss
+}
+
 enum Label {
   indigo
   gray

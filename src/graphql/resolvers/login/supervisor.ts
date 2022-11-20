@@ -2,6 +2,7 @@ import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { QueryResolvers, ReturnRegisteredSupervisor } from "../../generated";
 import { validatePassword } from "../../../utils/hashedPwd.util";
+import { encryptToken } from "../../../utils/crypto.utils";
 import { LoginInputSchema } from "../../../joi/login.joi";
 
 const supervisorLogin: QueryResolvers = {
@@ -45,11 +46,14 @@ const supervisorLogin: QueryResolvers = {
     // Remove Password field for security reasons
     Reflect.deleteProperty(supervisor, "password");
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Login successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       supervisor
     } as ReturnRegisteredSupervisor;
   },

@@ -2,6 +2,7 @@ import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { QueryResolvers, ReturnRegisteredCoordinator } from "../../generated";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
 import { validatePassword } from "../../../utils/hashedPwd.util";
+import { encryptToken } from "../../../utils/crypto.utils";
 import { LoginInputSchema } from "../../../joi/login.joi";
 
 const coordinatorLogin: QueryResolvers = {
@@ -45,11 +46,14 @@ const coordinatorLogin: QueryResolvers = {
     // Remove Password field for security reasons
     Reflect.deleteProperty(coordinator, "password");
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Login successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       coordinator,
     } as ReturnRegisteredCoordinator;
   },
