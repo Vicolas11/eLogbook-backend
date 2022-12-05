@@ -109,6 +109,9 @@ const eligibleMutations: MutationResolvers = {
             supervisor: { connect: { email: supervisorEmail } },
             coordinator: { connect: { email } },
           },
+          include: {
+            supervisor: true
+          }
         });
         return eligible;
       })
@@ -178,6 +181,9 @@ const eligibleMutations: MutationResolvers = {
           connect: { email: supervisorEmail },
         },
       },
+      include: {
+        supervisor: true
+      }
     });
 
     const matricNo = eligibleExist.matricNo;
@@ -243,7 +249,7 @@ const eligibleMutations: MutationResolvers = {
 
     // Delete Eligible
     const delEligible = await prisma.eligible.delete({
-      where: { id: loginUserId },
+      where: { id },
     });
 
     return {

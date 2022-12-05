@@ -101,6 +101,11 @@ const studentMutations: MutationResolvers = {
           connect: { id: organisationId },
         },
       },
+      include: {
+        coordinator: true,
+        supervisor: true,
+        organisation: true
+      }
     });
 
     // Remove the password field for security reasons
@@ -198,6 +203,11 @@ const studentMutations: MutationResolvers = {
     const updatedStudent = await prisma.student.update({
       where: { email: loginUserEmail },
       data,
+      include: {
+        coordinator: true,
+        supervisor: true,
+        organisation: true
+      }
     });
 
     // Generate Access and Refreshed Token

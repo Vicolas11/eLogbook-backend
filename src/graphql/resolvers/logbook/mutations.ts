@@ -20,7 +20,7 @@ const logbookMutations: MutationResolvers = {
     if (role !== 'Student' && role !== 'Admin')
       throw new AuthenticationError("Not authorized!");
 
-    const { email, day, title, description, diagram, label } = input;
+    const { email, day, title, description, diagram, label, actId } = input;
 
     // Input Validation
     const validate = LogbookInputSchema.validate(input);
@@ -41,6 +41,7 @@ const logbookMutations: MutationResolvers = {
       throw new AuthenticationError(
         "Logbook with this Day and Title already exist!"
       );
+  
 
     // Validate if the Logbook associated Student Exist
     const student = await prisma.student.findUnique({
@@ -57,7 +58,7 @@ const logbookMutations: MutationResolvers = {
       throw new AuthenticationError("Not authorize: Not genuine user!");
 
     // Create Logbook and connect to the Login Student
-    const inputData = { id: uuid(), day, title, description, diagram, label };
+    const inputData = { id: uuid(), day, title, description, diagram, label, actId };
     const logbook = await prisma.logbook.create({
       data: {
         ...inputData,
@@ -90,7 +91,7 @@ const logbookMutations: MutationResolvers = {
     if (role !== 'Student' && role !== 'Admin')
       throw new AuthenticationError("Not authorized!");
 
-    const { id, email, day, title, description, diagram, label } = input;
+    const { id, email, day, title, description, diagram, label, actId } = input;
 
     // Input Validation
     const validate = UpdateLogbookInputSchema.validate(input);
@@ -128,7 +129,7 @@ const logbookMutations: MutationResolvers = {
     // Update Logbook and connect to the Login Student
     const inputData = { title, description, diagram, label };
     const logbook = await prisma.logbook.update({
-      where: { id },
+      where: { actId },
       data: {
         ...inputData,
         student: {
@@ -160,7 +161,7 @@ const logbookMutations: MutationResolvers = {
     if (role !== 'Student' && role !== 'Admin')
       throw new AuthenticationError("Not authorized!");
 
-    const { id: logbookId, email: studentEmail } = input;
+    const { email: studentEmail, actId } = input;
 
     // Input Validation
     const validate = DelLogbookInputSchema.validate(input);
@@ -179,7 +180,7 @@ const logbookMutations: MutationResolvers = {
     // Validate if Logbook exist
     const studLogbook = await prisma.logbook.findFirst({
       where: {
-        id: logbookId,
+        actId,
         student: { email: studentEmail },
       },
     });
@@ -200,7 +201,7 @@ const logbookMutations: MutationResolvers = {
       );
 
     // Delete the connected Student Logbook
-    const logbook = await prisma.logbook.delete({ where: { id: logbookId } });
+    const logbook = await prisma.logbook.delete({ where: { actId } });
 
     return {
       status: 200,

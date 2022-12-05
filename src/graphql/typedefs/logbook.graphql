@@ -1,5 +1,6 @@
 type Logbook {
   id: ID!
+  actId: String
   day: DateTime
   title: String
   description: String
@@ -12,6 +13,7 @@ type Logbook {
 
 type ReturnLogbook {
   id: ID!
+  actId: String
   day: DateTime
   title: String
   description: String
@@ -19,6 +21,7 @@ type ReturnLogbook {
   diagram: String
   approved: Boolean
   student: RegisteredStudent
+  createdAt: DateTime
 }
 
 type ResponseLogbook {

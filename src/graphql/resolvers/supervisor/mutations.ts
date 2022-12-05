@@ -40,7 +40,7 @@ const supervisorMutations: MutationResolvers = {
 
     if (!coordinator)
       throw new AuthenticationError(
-        "Sorry, coordinator for this department doesn't exist!"
+        "Sorry, No exiting coordinator yet. Please contact your school coordinator!"
       );
 
     const cooordinatorId = coordinator?.id;
@@ -170,11 +170,14 @@ const supervisorMutations: MutationResolvers = {
       role: updatedSupervisor.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Updated supervisor successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       supervisor: updatedSupervisor,
     } as ReturnRegisteredSupervisor;
   },

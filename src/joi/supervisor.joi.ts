@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 export const SupervisorInputSchema = Joi.object({
+  title: Joi.string().valid("Prof", "Dr", "Mr", "Mrs", "Miss"),
   firstName: Joi.string().min(3).max(50).required(),
   lastName: Joi.string().min(3).max(50).required(),
   staffID: Joi.string().min(3).max(50).required(),
@@ -14,6 +15,7 @@ export const SupervisorInputSchema = Joi.object({
 });
 
 export const UpdateSupervisorInputSchema = Joi.object({
+  title: Joi.string().valid("Prof", "Dr", "Mr", "Mrs", "Miss"),
   firstName: Joi.string().min(3).max(50).required(),
   lastName: Joi.string().min(3).max(50).required(),
   phone: Joi.string().min(5),

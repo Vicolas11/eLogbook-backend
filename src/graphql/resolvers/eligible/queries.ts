@@ -1,7 +1,7 @@
 import { replicateAdminAuth, replicateCoordAuth } from "../../../utils/replacate.utils";
+import { getAllEligibles, getAllEligiblesByDepts } from "../../data/eligibleData";
 import { QueryResolvers, Eligible } from "../../generated";
 import { decryptToken } from "../../../utils/crypto.utils";
-import { getAllEligibles } from "../../data/eligibleData";
 
 const eligibleQueries: QueryResolvers = {
   // Get eligible by Login userID
@@ -17,6 +17,15 @@ const eligibleQueries: QueryResolvers = {
     const token = decryptToken(auth) as string;
     replicateAdminAuth(token);
     const query = await getAllEligibles();
+    return query as Array<Eligible>;
+  },
+
+  // Get all eligibles by Depts and Institution
+  eligiblesByDept: async (_, { input }, { auth, prisma }) => {
+    const {  id, department, institute } = input;
+    const token = decryptToken(auth) as string;
+    replicateCoordAuth(token, id, prisma);
+    const query = await getAllEligiblesByDepts(department, institute);
     return query as Array<Eligible>;
   },
 };

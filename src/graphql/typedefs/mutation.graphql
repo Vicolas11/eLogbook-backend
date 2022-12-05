@@ -2,7 +2,7 @@ type Mutation {
   # Upload File >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   uploadFile(input: FileInput!): UploadResponse
   updateFile(updateInput: FileUpdateInput!): UploadResponse
-  deleteFile(deleteInput: ID!): UploadResponse
+  deleteFile(deleteInput: FileDelInput!): UploadResponse
 
   # Change Password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   changePassword(input: ChangePswInput!) : ChangePswResponse

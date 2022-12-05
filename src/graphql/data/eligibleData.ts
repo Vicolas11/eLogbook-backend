@@ -12,6 +12,23 @@ export const getAllEligibles = async(): Promise<Eligible[]> => {
   return eligibles;
 };
 
+export const getAllEligiblesByDepts = async(department: string, institute: string): Promise<Eligible[]> => {
+  const eligibles = await prisma.eligible.findMany({
+    where: { 
+      AND: [ 
+        {department}, 
+        {institute}
+      ]
+    },
+    include: {
+      supervisor: true
+    },
+  });
+  if (!eligibles)
+    throw new AuthenticationError("Eligiblility not found!");
+  return eligibles;
+};
+
 const getEligibleByID = async(id: string): Promise<Eligible | null> => {
   console.log(`Called getUserById for id: ${id}`);
   const eligible = await prisma.eligible.findFirst({

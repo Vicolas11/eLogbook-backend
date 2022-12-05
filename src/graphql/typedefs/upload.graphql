@@ -2,4 +2,5 @@ type UploadResponse {
   message: String!
   imageUrl: String!
   status: Int!
+  actId: String!
 }

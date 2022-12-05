@@ -6,6 +6,7 @@ type Query {
   # SUPERVISOR
   supervisor(id: ID!): Supervisor
   supervisors: [Supervisor]
+  supervisorsByDepts(input: SupByDeptsInput!): [Supervisor]
 
   # COORDINATOR
   coordinator(id: ID!): Coordinator
@@ -22,6 +23,7 @@ type Query {
   # ELIGIBLE
   eligible(id: ID!): Eligible
   eligibles: [Eligible]
+  eligiblesByDept(input: EligDeptsInput!): [Eligible]
 
   # LOGBOOK
   logbook(id: ID!): Logbook

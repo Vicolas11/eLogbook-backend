@@ -275,8 +275,9 @@ export type DelEligibleInput = {
 };
 
 export type DelLogbookInput = {
+  actId: Scalars['String'];
   email: Scalars['String'];
-  id: Scalars['ID'];
+  id?: InputMaybe<Scalars['ID']>;
 };
 
 export type DeleteBlogPostInput = {
@@ -341,6 +342,12 @@ export type DeletedSupervisor = {
   title?: Maybe<Title>;
 };
 
+export type EligDeptsInput = {
+  department: Scalars['String'];
+  id: Scalars['ID'];
+  institute: Scalars['String'];
+};
+
 export type Eligible = {
   __typename?: 'Eligible';
   coordinator?: Maybe<Coordinator>;
@@ -359,6 +366,12 @@ export type EligibleInput = {
   matricNo: Scalars['String'];
 };
 
+export type FileDelInput = {
+  actId?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  type?: InputMaybe<FileDir>;
+};
+
 export enum FileDir {
   Avatar = 'avatar',
   Blogposts = 'blogposts',
@@ -373,6 +386,7 @@ export type FileInput = {
 };
 
 export type FileUpdateInput = {
+  actId?: InputMaybe<Scalars['String']>;
   file?: InputMaybe<Scalars['Upload']>;
   id: Scalars['ID'];
   type: FileDir;
@@ -407,6 +421,7 @@ export enum Level {
 
 export type Logbook = {
   __typename?: 'Logbook';
+  actId?: Maybe<Scalars['String']>;
   approved?: Maybe<Scalars['Boolean']>;
   createdAt?: Maybe<Scalars['DateTime']>;
   day?: Maybe<Scalars['DateTime']>;
@@ -419,6 +434,7 @@ export type Logbook = {
 };
 
 export type LogbookInput = {
+  actId: Scalars['String'];
   day: Scalars['DateTime'];
   description: Scalars['String'];
   diagram?: InputMaybe<Scalars['String']>;
@@ -499,7 +515,7 @@ export type MutationDeleteEligibleArgs = {
 
 
 export type MutationDeleteFileArgs = {
-  deleteInput: Scalars['ID'];
+  deleteInput: FileDelInput;
 };
 
 
@@ -627,6 +643,7 @@ export type Query = {
   coordinators?: Maybe<Array<Maybe<Coordinator>>>;
   eligible?: Maybe<Eligible>;
   eligibles?: Maybe<Array<Maybe<Eligible>>>;
+  eligiblesByDept?: Maybe<Array<Maybe<Eligible>>>;
   logbook?: Maybe<Logbook>;
   logbooks?: Maybe<Array<Maybe<Logbook>>>;
   loginAdmin?: Maybe<ReturnRegisteredAdmin>;
@@ -640,6 +657,7 @@ export type Query = {
   students?: Maybe<Array<Maybe<Student>>>;
   supervisor?: Maybe<Supervisor>;
   supervisors?: Maybe<Array<Maybe<Supervisor>>>;
+  supervisorsByDepts?: Maybe<Array<Maybe<Supervisor>>>;
 };
 
 
@@ -655,6 +673,11 @@ export type QueryCoordinatorArgs = {
 
 export type QueryEligibleArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryEligiblesByDeptArgs = {
+  input: EligDeptsInput;
 };
 
 
@@ -700,6 +723,11 @@ export type QueryStudentArgs = {
 
 export type QuerySupervisorArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QuerySupervisorsByDeptsArgs = {
+  input: SupByDeptsInput;
 };
 
 export type RegisteredAdmin = {
@@ -748,6 +776,7 @@ export type RegisteredStudent = {
   __typename?: 'RegisteredStudent';
   address?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
+  coordinator?: Maybe<Coordinator>;
   department?: Maybe<Scalars['String']>;
   eligible?: Maybe<Scalars['Boolean']>;
   email?: Maybe<Scalars['String']>;
@@ -758,9 +787,11 @@ export type RegisteredStudent = {
   lastName?: Maybe<Scalars['String']>;
   level?: Maybe<Level>;
   matricNo?: Maybe<Scalars['String']>;
+  organisation?: Maybe<Organisation>;
   password?: Maybe<Scalars['String']>;
   phone?: Maybe<Scalars['String']>;
   place?: Maybe<Scalars['String']>;
+  supervisor?: Maybe<Supervisor>;
   user?: Maybe<User>;
 };
 
@@ -797,7 +828,9 @@ export type ReturnBlogPost = {
 
 export type ReturnLogbook = {
   __typename?: 'ReturnLogbook';
+  actId?: Maybe<Scalars['String']>;
   approved?: Maybe<Scalars['Boolean']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
   day?: Maybe<Scalars['DateTime']>;
   description?: Maybe<Scalars['String']>;
   diagram?: Maybe<Scalars['String']>;
@@ -938,6 +971,11 @@ export type StudentInput = {
   place: Scalars['String'];
 };
 
+export type SupByDeptsInput = {
+  department: Scalars['String'];
+  institute: Scalars['String'];
+};
+
 export type Supervisor = {
   __typename?: 'Supervisor';
   avatar?: Maybe<Scalars['String']>;
@@ -1009,11 +1047,12 @@ export type UpdateEligibleInput = {
 };
 
 export type UpdateLogbookInput = {
+  actId: Scalars['String'];
   day: Scalars['DateTime'];
   description: Scalars['String'];
   diagram?: InputMaybe<Scalars['String']>;
   email: Scalars['String'];
-  id: Scalars['ID'];
+  id?: InputMaybe<Scalars['ID']>;
   label: Label;
   title: Scalars['String'];
 };
@@ -1051,6 +1090,7 @@ export type UpdateSupervisorInput = {
 
 export type UploadResponse = {
   __typename?: 'UploadResponse';
+  actId: Scalars['String'];
   imageUrl: Scalars['String'];
   message: Scalars['String'];
   status: Scalars['Int'];
@@ -1164,9 +1204,11 @@ export type ResolversTypes = {
   DeletedStudent: ResolverTypeWrapper<DeletedStudent>;
   DeletedSupervisor: ResolverTypeWrapper<DeletedSupervisor>;
   Duration: ResolverTypeWrapper<Scalars['Duration']>;
+  EligDeptsInput: EligDeptsInput;
   Eligible: ResolverTypeWrapper<Eligible>;
   EligibleInput: EligibleInput;
   EmailAddress: ResolverTypeWrapper<Scalars['EmailAddress']>;
+  FileDelInput: FileDelInput;
   FileDir: FileDir;
   FileInput: FileInput;
   FileUpdateInput: FileUpdateInput;
@@ -1242,6 +1284,7 @@ export type ResolversTypes = {
   StringBox: ResolverTypeWrapper<StringBox>;
   Student: ResolverTypeWrapper<Student>;
   StudentInput: StudentInput;
+  SupByDeptsInput: SupByDeptsInput;
   Supervisor: ResolverTypeWrapper<Supervisor>;
   SupervisorInput: SupervisorInput;
   Time: ResolverTypeWrapper<Scalars['Time']>;
@@ -1301,9 +1344,11 @@ export type ResolversParentTypes = {
   DeletedStudent: DeletedStudent;
   DeletedSupervisor: DeletedSupervisor;
   Duration: Scalars['Duration'];
+  EligDeptsInput: EligDeptsInput;
   Eligible: Eligible;
   EligibleInput: EligibleInput;
   EmailAddress: Scalars['EmailAddress'];
+  FileDelInput: FileDelInput;
   FileInput: FileInput;
   FileUpdateInput: FileUpdateInput;
   GUID: Scalars['GUID'];
@@ -1374,6 +1419,7 @@ export type ResolversParentTypes = {
   StringBox: StringBox;
   Student: Student;
   StudentInput: StudentInput;
+  SupByDeptsInput: SupByDeptsInput;
   Supervisor: Supervisor;
   SupervisorInput: SupervisorInput;
   Time: Scalars['Time'];
@@ -1633,6 +1679,7 @@ export interface LocaleScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type LogbookResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['Logbook'] = ResolversParentTypes['Logbook']> = {
+  actId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   approved?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   day?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -1761,6 +1808,7 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   coordinators?: Resolver<Maybe<Array<Maybe<ResolversTypes['Coordinator']>>>, ParentType, ContextType>;
   eligible?: Resolver<Maybe<ResolversTypes['Eligible']>, ParentType, ContextType, RequireFields<QueryEligibleArgs, 'id'>>;
   eligibles?: Resolver<Maybe<Array<Maybe<ResolversTypes['Eligible']>>>, ParentType, ContextType>;
+  eligiblesByDept?: Resolver<Maybe<Array<Maybe<ResolversTypes['Eligible']>>>, ParentType, ContextType, RequireFields<QueryEligiblesByDeptArgs, 'input'>>;
   logbook?: Resolver<Maybe<ResolversTypes['Logbook']>, ParentType, ContextType, RequireFields<QueryLogbookArgs, 'id'>>;
   logbooks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Logbook']>>>, ParentType, ContextType>;
   loginAdmin?: Resolver<Maybe<ResolversTypes['ReturnRegisteredAdmin']>, ParentType, ContextType, RequireFields<QueryLoginAdminArgs, 'loginInput'>>;
@@ -1774,6 +1822,7 @@ export type QueryResolvers<ContextType = IContext, ParentType extends ResolversP
   students?: Resolver<Maybe<Array<Maybe<ResolversTypes['Student']>>>, ParentType, ContextType>;
   supervisor?: Resolver<Maybe<ResolversTypes['Supervisor']>, ParentType, ContextType, RequireFields<QuerySupervisorArgs, 'id'>>;
   supervisors?: Resolver<Maybe<Array<Maybe<ResolversTypes['Supervisor']>>>, ParentType, ContextType>;
+  supervisorsByDepts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Supervisor']>>>, ParentType, ContextType, RequireFields<QuerySupervisorsByDeptsArgs, 'input'>>;
 };
 
 export interface RgbScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['RGB'], any> {
@@ -1829,6 +1878,7 @@ export type RegisteredOrganisationResolvers<ContextType = IContext, ParentType e
 export type RegisteredStudentResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['RegisteredStudent'] = ResolversParentTypes['RegisteredStudent']> = {
   address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   eligible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1839,9 +1889,11 @@ export type RegisteredStudentResolvers<ContextType = IContext, ParentType extend
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   level?: Resolver<Maybe<ResolversTypes['Level']>, ParentType, ContextType>;
   matricNo?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organisation?: Resolver<Maybe<ResolversTypes['Organisation']>, ParentType, ContextType>;
   password?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   place?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  supervisor?: Resolver<Maybe<ResolversTypes['Supervisor']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1878,7 +1930,9 @@ export type ReturnBlogPostResolvers<ContextType = IContext, ParentType extends R
 };
 
 export type ReturnLogbookResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnLogbook'] = ResolversParentTypes['ReturnLogbook']> = {
+  actId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   approved?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   day?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   diagram?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2051,6 +2105,7 @@ export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 }
 
 export type UploadResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['UploadResponse'] = ResolversParentTypes['UploadResponse']> = {
+  actId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   imageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

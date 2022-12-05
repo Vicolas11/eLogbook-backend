@@ -1,6 +1,6 @@
 import { signAccessJWToken, signRefreshJWToken } from "../../../utils/jwt.util";
 import { AuthenticationError, ValidationError } from "apollo-server-express";
-import { JwToken, QueryResolvers, ReturnRegisteredStudent } from "../../generated";
+import { QueryResolvers, ReturnRegisteredStudent } from "../../generated";
 import { validatePassword } from "../../../utils/hashedPwd.util";
 import { encryptToken } from "../../../utils/crypto.utils";
 import { LoginInputSchema } from "../../../joi/login.joi";
@@ -20,7 +20,14 @@ const studentLogin: QueryResolvers = {
       );
 
     // Verify User and it's Role
-    const student = await prisma.student.findUnique({ where: { email } });
+    const student = await prisma.student.findUnique({
+      where: { email },
+      include: { 
+        coordinator: true, 
+        supervisor: true, 
+        organisation: true 
+      },
+    });
     if (!student) throw new AuthenticationError("Student doesn't exist!");
     if (student.user !== "Student")
       throw new AuthenticationError("Invalid user type!");

@@ -1,5 +1,5 @@
 import { replicateAdminAuth, replicateSupAuth } from "../../../utils/replacate.utils";
-import { getAllSupervisors } from "../../data/supervisorData";
+import { getAllSupervisors, getSupervisorByDept } from "../../data/supervisorData";
 import { QueryResolvers, Supervisor } from "../../generated";
 import { decryptToken } from "../../../utils/crypto.utils";
 
@@ -16,6 +16,12 @@ const supervisorQueries: QueryResolvers = {
     const token = decryptToken(auth) as string;
     replicateAdminAuth(token);
     const query = await getAllSupervisors();
+    return query as Array<Supervisor>;
+  },
+  // Get All Supervisors Department and Institution
+  supervisorsByDepts: async (_, { input }) => {
+    const {department, institute} = input;
+    const query = await getSupervisorByDept(department, institute);
     return query as Array<Supervisor>;
   },
 };

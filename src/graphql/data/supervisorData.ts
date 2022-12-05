@@ -7,6 +7,19 @@ export const getAllSupervisors = async (): Promise<Supervisor[]> => {
   return supervisors;
 };
 
+export const getSupervisorByDept = async (department: string, institute: string): Promise<Supervisor[] | null> => {
+  const supervisor = await prisma.supervisor.findMany({ 
+    where: { 
+      AND: [ 
+        {department}, 
+        {institute}
+      ]
+    }
+  });
+  if (!supervisor) throw new AuthenticationError("Supervisor not found!");
+  return supervisor;
+};
+
 const getSupervisorByID = async (id: string): Promise<Supervisor | null> => {
   console.log(`Called getUserById for id: ${id}`);
   const supervisor = await prisma.supervisor.findUnique({

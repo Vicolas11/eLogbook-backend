@@ -39,6 +39,9 @@ type RegisteredStudent {
   avatar: String
   eligible: Boolean
   user: User
+  supervisor: Supervisor
+  coordinator: Coordinator
+  organisation: Organisation
 }
 
 type DeletedStudent {

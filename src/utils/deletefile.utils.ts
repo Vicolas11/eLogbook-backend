@@ -1,7 +1,7 @@
 import fileRemover from "./fileremove.util";
 
-const deleteFile = async (oldImgURL: string, avatar: boolean) => {
-  const subpath = avatar ? "avatar" : "diagram";
+const deleteFile = async (oldImgURL: string, subpath: string) => {
+  // const subpath = avatar ? "avatar" : "diagram";
   const imgURL = oldImgURL.split("/");
   const lastIdx = imgURL.length - 1;
   const filepath = imgURL[lastIdx];

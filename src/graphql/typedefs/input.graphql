@@ -12,8 +12,15 @@ input FileInput {
 
 input FileUpdateInput {
   file: Upload
+  actId: String
   id: ID!
   type: FileDir!
+}
+
+input FileDelInput {
+  id: ID!
+  actId: String
+  type: FileDir
 }
 
 # Change Password >>>>>>>>>>>>>>>>>>
@@ -57,6 +64,11 @@ input DeleteStudentInput {
 }
 
 # Supervisor >>>>>>>>>>>>>>>>>>>>>>
+input SupByDeptsInput {
+  department: String!
+  institute: String!
+}
+
 input SupervisorInput {
   title: Title!
   firstName: String!
@@ -184,6 +196,12 @@ input DelEligibleInput {
   id: ID!
 }
 
+input EligDeptsInput {
+  id: ID!
+  department: String!
+  institute: String!
+}
+
 #Logbook >>>>>>>>>>>>>>>>>>>>>>
 input LogbookInput {
   day: DateTime!
@@ -192,19 +210,22 @@ input LogbookInput {
   label: Label!
   diagram: String
   email: String!
+  actId: String!
 }
 
 input UpdateLogbookInput {
-  id: ID!
+  id: ID
   day: DateTime!
   title: String!
   description: String!
   label: Label!
   diagram: String
   email: String!
+  actId: String!
 }
 
 input DelLogbookInput {
-  id: ID!
+  id: ID
+  actId: String!
   email: String!
 }

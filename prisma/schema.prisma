@@ -115,7 +115,7 @@ model Supervisor {
   title         Title
   firstName     String
   lastName      String
-  staffID       String
+  staffID       String      @unique
   phone         String      @unique
   institute     String
   department    String
@@ -136,7 +136,7 @@ model Coordinator {
   title       Title
   firstName   String
   lastName    String
-  staffID     String
+  staffID     String      @unique
   phone       String      @unique
   institute   String
   department  String
@@ -201,6 +201,7 @@ model Eligible {
 
 model Logbook {
   id          String    @id @default(uuid())
+  actId       String    @unique
   day         DateTime?
   title       String
   description String

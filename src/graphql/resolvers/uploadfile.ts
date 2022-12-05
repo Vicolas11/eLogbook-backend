@@ -1,11 +1,21 @@
-import { AuthenticationError, UserInputError, ValidationError } from "apollo-server-express";
-import { FileInputSchema, FileUpdateInputSchema } from "../../joi/uploadfile.joi";
-import { MutationResolvers, UploadResponse } from "../generated";
+import {
+  AuthenticationError,
+  UserInputError,
+  ValidationError,
+} from "apollo-server-express";
+import {
+  FileDelInputSchema,
+  FileInputSchema,
+  FileUpdateInputSchema,
+} from "../../joi/uploadfile.joi";
+import { Logbook, MutationResolvers, UploadResponse } from "../generated";
 import readStreamFile from "../../utils/readStream.util";
 import { decryptToken } from "../../utils/crypto.utils";
 import deleteFile from "../../utils/deletefile.utils";
-import getUser from "../../utils/getuser.util";
 import { envConfig } from "../../configs/env.config";
+import getUser from "../../utils/getuser.util";
+
+const { default_img } = envConfig;
 
 const uploadFileMutation: MutationResolvers = {
   // CREATE UPDATE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -46,13 +56,12 @@ const uploadFileMutation: MutationResolvers = {
     const token = decryptToken(auth) as string;
     const user = getUser(token);
     const { id: loginUserId, role } = user;
-    const { port, dev, url, default_img } = envConfig;
 
     // Authenticate user
     if (!user || loginUserId === "" || role === "")
       throw new AuthenticationError("User not authenticated!");
 
-    const { file, id, type } = input;
+    const { file, id, type, actId } = input;
 
     // Validate Input field
     const validate = FileUpdateInputSchema.validate(input);
@@ -64,14 +73,26 @@ const uploadFileMutation: MutationResolvers = {
           "Validation Error!"
       );
 
-    const loginUserRole = role.toLowerCase();
-    const userExist = await prisma[loginUserRole].findUnique({
-      where: { id: loginUserId },
-    });
+    let userExist: any | null;
+    let logbook: any | undefined;
+
+    if (type === "diagrams") {
+      // Update Logbook Diagram
+      const studLogbook = await prisma.student.findUnique({
+        where: { id: loginUserId },
+        include: { logbooks: true },
+      });
+      logbook = studLogbook?.logbooks.find((i) => i.actId === actId);
+    } else {
+      // Update Users Avatar / Organisation Logo
+      const loginUserRole = role.toLowerCase();
+      userExist = await prisma[loginUserRole].findUnique({
+        where: { id: loginUserId },
+      });
+      if (!userExist) throw new AuthenticationError("User doesn't exist!");
+    }
+
     const getFile = await file;
-
-    if (!userExist) throw new AuthenticationError("User doesn't exist!");
-
     if (!getFile) throw new AuthenticationError("Uploaded an empty file!");
 
     if (loginUserId !== id)
@@ -79,7 +100,10 @@ const uploadFileMutation: MutationResolvers = {
 
     const imageURL = await readStreamFile({
       file: file,
-      oldImgURL: (userExist?.avatar === default_img) ? "" : (userExist?.avatar || ""),
+      oldImgURL:
+        userExist?.avatar === default_img
+          ? ""
+          : userExist?.avatar || userExist?.logo || logbook?.diagram,
       action: "update",
       subpath: type,
     });
@@ -92,7 +116,7 @@ const uploadFileMutation: MutationResolvers = {
   },
 
   // DELETE FILE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  deleteFile: async (_, { deleteInput: id }, { prisma, auth }) => {
+  deleteFile: async (_, { deleteInput }, { prisma, auth }) => {
     const token = decryptToken(auth) as string;
     const user = getUser(token);
     const { id: loginUserId, role } = user;
@@ -101,27 +125,69 @@ const uploadFileMutation: MutationResolvers = {
     if (!user || loginUserId === "" || role === "")
       throw new AuthenticationError("User not authenticated!");
 
-    const loginUserRole = role.toLowerCase();
-    const userExist = await prisma[loginUserRole].findUnique({
-      where: { id: loginUserId },
-    });
+    const { id, type, actId } = deleteInput;  
+    
+    // Validate Input field
+    const validate = FileDelInputSchema.validate(deleteInput);
+    const { error } = validate;
 
-    if (!userExist) throw new AuthenticationError("User doen't exist!");
+    if (error)
+      throw new ValidationError(
+        (error?.details?.map((err) => err.message) as unknown as string) ||
+          "Validation Error!"
+      );
+
+    let userExist: any | null;
+    let logbook: any | undefined;
+
+    if (type === "diagrams") {
+      // Delete Logbook Diagram
+      const studLogbook = await prisma.student.findUnique({
+        where: { id: loginUserId },
+        include: { logbooks: true },
+      });
+      logbook = studLogbook?.logbooks.find((i) => i.actId === actId);
+    } else {
+      const loginUserRole = role.toLowerCase();
+      const userExist = await prisma[loginUserRole].findUnique({
+        where: { id: loginUserId },
+      });
+
+      if (!userExist) throw new AuthenticationError("User doesn't exist!");
+    }
 
     // Authorized user, if is Genuine
     if (loginUserId !== id)
       throw new AuthenticationError("Not authorized: Not a genuine user!");
 
-    const isDeleted = await deleteFile(userExist?.avatar as string, true);
-    const message = isDeleted
-      ? "Image successfuly deleted!"
-      : "Image deleting failed!";
-    const status = isDeleted ? 200 : 500;
+    let status: number = 500;
+    let message: string = "";
+    let subpath: string = "";
+
+    if (userExist?.avatar) {
+      subpath = "avatar";
+    } else if (userExist?.logo) {
+      subpath = "logo";
+    } else if (logbook?.diagram) {
+      subpath = "diagrams";
+    }
+
+    if (userExist?.avatar !== default_img || logbook?.diagram) {
+      const isDeleted = await deleteFile(
+        userExist?.avatar || userExist?.logo || logbook?.diagram,
+        subpath
+      );
+      message = isDeleted
+        ? "Image successfuly deleted!"
+        : "Image deleting failed!";
+      status = isDeleted ? 200 : 500;
+    }    
 
     return {
-      message: message,
-      imageUrl: userExist?.avatar,
-      status: status,
+      message: userExist?.avatar === default_img || !logbook?.diagram ? "Successful" : message,
+      imageUrl: userExist?.avatar || userExist?.logo || logbook?.diagram,
+      status: userExist?.avatar === default_img || !logbook?.diagram ? 200 : status,
+      actId
     } as UploadResponse;
   },
 };
