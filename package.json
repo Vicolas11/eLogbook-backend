@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=development nodemon",
     "copy-schemas": "cpx src/**/*.graphql build",
     "build": "tsc && npm run copy-schemas",
-    "start": "node ./build/index.js",
+    "start": "node build/index.js",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "reset": "prisma migrate reset",
