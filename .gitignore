@@ -106,3 +106,5 @@ dist
 # Prisma
 prisma/docs/
 prisma/joi/
+prisma/erd/
+prisma/migration/
