@@ -1,0 +1,47 @@
+type Mutation {
+  # Upload File >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  uploadFile(input: FileInput!): UploadResponse
+  updateFile(updateInput: FileUpdateInput!): UploadResponse
+  deleteFile(deleteInput: FileDelInput!): UploadResponse
+
+  # Change Password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  changePassword(input: ChangePswInput!) : ChangePswResponse
+
+  # Student >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  student(registerInput: StudentInput!): ReturnRegisteredStudent
+  updateStudent(updateInput: UpdateStudentInput!): ReturnRegisteredStudent
+  deleteStudent(emailInput: DeleteStudentInput!): DeletedStudent
+
+  # Supervisor >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  supervisor(registerInput: SupervisorInput!): ReturnRegisteredSupervisor
+  updateSupervisor(updateInput: UpdateSupervisorInput!): ReturnRegisteredSupervisor
+  deleteSupervisor(emailInput: DeleteSupervisorInput!): DeletedSupervisor
+
+  # Coordinator >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  coordinator(registerInput: CoordinatorInput!): ReturnRegisteredCoordinator
+  updateCoordinator(updateInput: UpdateCoordinatorInput!): ReturnRegisteredCoordinator
+  deleteCoordinator(emailInput: DeleteCoordinatorInput!): DeletedCoordinator
+
+  # Organisation >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  organisation(registerInput: OrganisationInput!): ReturnRegisteredOrganisation
+  updateOrganisation(updateInput: UpdateOrganisationInput!): ReturnRegisteredOrganisation
+  deleteOrganisation(emailInput: DeleteOrganisationInput!): DeletedOrganisation
+
+  # Admin >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  admin(registerInput: AdminInput!): ReturnRegisteredAdmin
+
+  # Create BlogPost >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  blogPost(registerInput: BlogPostInput!): ReturnBlogPost
+  updateBlogPost(input: UpdateBlogPostInput!): ReturnBlogPost
+  deleteBlogPost(input: DeleteBlogPostInput!): ReturnBlogPost
+
+  # Add Elibility Student >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  eligible(registerInput: EligibleInput!): ReturnRegisterEligible
+  updateEligible(updateInput: UpdateEligibleInput!): ReturnRegisterEligible
+  deleteEligible(deleteInput: DelEligibleInput!): ReturnRegisterEligible
+
+  # Logbook >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  logbook(input: LogbookInput!) : ResponseLogbook
+  updateLogbook(input: UpdateLogbookInput!) : ResponseLogbook
+  deleteLogbook(input: DelLogbookInput!) : ResponseLogbook
+}

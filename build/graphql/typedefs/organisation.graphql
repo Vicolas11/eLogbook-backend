@@ -1,0 +1,44 @@
+type Organisation {
+  id: ID!
+  name: String
+  sector: Sector
+  phone: String
+  address: String
+  employees: Int
+  email: String
+  password: String
+  logo: String
+  user: User
+  students: [Student]
+  joinedDate: DateTime
+}
+
+type RegisteredOrganisation {
+  id: ID!
+  name: String
+  sector: Sector
+  phone: String
+  address: String
+  employees: Int
+  email: String
+  password: String
+  logo: String
+  user: User
+}
+
+type DeletedOrganisation {
+  id: ID!
+  name: String
+  sector: Sector
+  email: String
+  status: Int
+  message: String
+}
+
+type ReturnRegisteredOrganisation implements Token {
+  status: Int!
+  message: String!
+  accessToken: String!
+  refreshToken: String!
+  organisation: RegisteredOrganisation!
+}

@@ -1,0 +1,62 @@
+type Student {
+  id: ID!
+  firstName: String
+  lastName: String
+  matricNo: String
+  phone: String
+  address: String
+  institute: String
+  department: String
+  level: Level
+  gender: Gender
+  place: String
+  email: String
+  password: String
+  avatar: String
+  eligible: Boolean
+  user: User!
+  supervisor: Supervisor
+  coordinator: Coordinator
+  organisation: Organisation
+  logbooks: [Logbook]
+  joinedDate: DateTime
+}
+
+type RegisteredStudent {
+  id: ID!
+  firstName: String
+  lastName: String
+  matricNo: String
+  phone: String
+  address: String
+  institute: String
+  department: String
+  level: Level
+  gender: Gender
+  place: String
+  email: String
+  password: String
+  avatar: String
+  eligible: Boolean
+  user: User
+  supervisor: Supervisor
+  coordinator: Coordinator
+  organisation: Organisation
+}
+
+type DeletedStudent {
+  id: ID!
+  firstName: String
+  lastName: String
+  matricNo: String
+  status: Int
+  message: String
+}
+
+type ReturnRegisteredStudent implements Token {
+  status: Int!
+  message: String!
+  accessToken: String!
+  refreshToken: String!
+  student: RegisteredStudent!
+}

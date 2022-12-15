@@ -1,0 +1,31 @@
+type Logbook {
+  id: ID!
+  actId: String
+  day: DateTime
+  title: String
+  description: String
+  label: Label
+  diagram: String
+  approved: Boolean
+  student: Student
+  createdAt: DateTime
+}
+
+type ReturnLogbook {
+  id: ID!
+  actId: String
+  day: DateTime
+  title: String
+  description: String
+  label: Label
+  diagram: String
+  approved: Boolean
+  student: RegisteredStudent
+  createdAt: DateTime
+}
+
+type ResponseLogbook {
+  status: Int
+  message: String
+  logbook: ReturnLogbook
+}
