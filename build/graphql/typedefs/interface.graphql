@@ -1,4 +1,0 @@
-interface Token {
-  accessToken: String!
-  refreshToken: String!
-}
