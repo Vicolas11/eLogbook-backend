@@ -3,6 +3,7 @@ type Mutation {
   uploadFile(input: FileInput!): UploadResponse
   updateFile(updateInput: FileUpdateInput!): UploadResponse
   deleteFile(deleteInput: FileDelInput!): UploadResponse
+  deleteFromCloudinary(input: CloudDelInput!): CloudDelResponse
 
   # Change Password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   changePassword(input: ChangePswInput!) : ChangePswResponse

@@ -4,7 +4,7 @@ import { join } from "path";
 
 const fileRemover = async (args: IFileRemover): Promise<boolean> => {
   const { filepath, subpath } = args;
-  return new Promise<boolean>((resolve, reject) => {
+  return new Promise<boolean>(async (resolve, reject) => {
     try {
       const path = join(__dirname, "../..", "public/upload", subpath, filepath);
       unlink(path, (err) => {

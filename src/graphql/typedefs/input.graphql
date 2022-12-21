@@ -23,6 +23,10 @@ input FileDelInput {
   type: FileDir
 }
 
+input CloudDelInput {
+  oldImgURL: String!
+}
+
 # Change Password >>>>>>>>>>>>>>>>>>
 input ChangePswInput {
   id: ID!

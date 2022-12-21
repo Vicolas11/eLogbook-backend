@@ -1,11 +1,8 @@
-import { constant } from "../configs/constant.config";
-import SimpleCrypto, { PlainData } from "simple-crypto-js";
-import { config } from "dotenv";
 import { AuthenticationError } from "apollo-server-express";
+import SimpleCrypto, { PlainData } from "simple-crypto-js";
+import { constant } from "../configs/constant.config";
 
-config();
 const { cryptoSecretKey } = constant;
-
 const simpleCrypto = new SimpleCrypto(cryptoSecretKey);
 
 export const encryptToken = (token: string): string => {

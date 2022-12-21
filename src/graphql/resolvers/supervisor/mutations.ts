@@ -11,7 +11,7 @@ import { v4 as uuid } from "uuid";
 const supervisorMutations: MutationResolvers = {
   // CREATE SUPERVISOR USER >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   supervisor: async (_, { registerInput: input }, { prisma }) => {
-    const { email, institute, department, firstName, lastName, staffID } = input;
+    const { email, institute, department, firstName, lastName, staffID, phone } = input;
     
     // Validate Input field
     const validate = SupervisorInputSchema.validate(input);
@@ -30,6 +30,22 @@ const supervisorMutations: MutationResolvers = {
 
     if (supervisorExist)
       throw new AuthenticationError("Supervisor already existed!");
+
+    // Check if Supervisor Staff ID Already Exist
+    const staffIDExist = await prisma.supervisor.findUnique({
+      where: { staffID },
+    });
+
+    if (staffIDExist)
+      throw new AuthenticationError("Supervisor StaffID already existed!");
+    
+    // Check if Supervisor Phone Already Exist
+    const phoneExist = await prisma.supervisor.findUnique({
+      where: { phone },
+    });
+
+    if (phoneExist)
+      throw new AuthenticationError("Supervisor phone number already existed!");
 
     // Get the Coordinator in a department of a school
     const coordinator = await prisma.coordinator.findFirst({

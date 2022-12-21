@@ -17,6 +17,7 @@ type ReturnedEligible {
   supervisor: Supervisor
   coordinator: Coordinator
   matricNo: String
+  createdAt: DateTime
 }
 
 type ReturnRegisterEligible {

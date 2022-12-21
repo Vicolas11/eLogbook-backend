@@ -1,14 +1,7 @@
-import {
-  AuthenticationError,
-  UserInputError,
-  ValidationError,
-} from "apollo-server-express";
-import {
-  FileDelInputSchema,
-  FileInputSchema,
-  FileUpdateInputSchema,
-} from "../../joi/uploadfile.joi";
-import { Logbook, MutationResolvers, UploadResponse } from "../generated";
+import { CloudDelInputSchema, FileDelInputSchema, FileInputSchema, FileUpdateInputSchema } from "../../joi/uploadfile.joi";
+import { AuthenticationError, UserInputError, ValidationError } from "apollo-server-express";
+import { CloudDelResponse, Logbook, MutationResolvers, UploadResponse } from "../generated";
+import { deleteCloudinary } from "../../utils/cloudinary.util";
 import readStreamFile from "../../utils/readStream.util";
 import { decryptToken } from "../../utils/crypto.utils";
 import deleteFile from "../../utils/deletefile.utils";
@@ -18,7 +11,7 @@ import getUser from "../../utils/getuser.util";
 const { default_img } = envConfig;
 
 const uploadFileMutation: MutationResolvers = {
-  // CREATE UPDATE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // CREATE UPLOAD >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   uploadFile: async (_, { input }, _ctx) => {
     const { file, type } = input;
 
@@ -121,11 +114,11 @@ const uploadFileMutation: MutationResolvers = {
     const user = getUser(token);
     const { id: loginUserId, role } = user;
 
-    // Authenticate user
+    // Authenticate User
     if (!user || loginUserId === "" || role === "")
       throw new AuthenticationError("User not authenticated!");
 
-    const { id, type, actId } = deleteInput;  
+    const { id, type, actId } = deleteInput;
     
     // Validate Input field
     const validate = FileDelInputSchema.validate(deleteInput);
@@ -190,6 +183,40 @@ const uploadFileMutation: MutationResolvers = {
       actId
     } as UploadResponse;
   },
+  
+  //Delete An Image File from Cloudinary Media Library
+  deleteFromCloudinary: async (_, { input }, { auth }) => {
+    const token = decryptToken(auth) as string;
+    const user = getUser(token);
+    const { id: loginUserId, role } = user;
+
+    // Authenticate User
+    if (!user || loginUserId === "" || role === "")
+      throw new AuthenticationError("User not authenticated!");
+
+    const { oldImgURL } = input;
+    
+    // Validate Input field
+    const validate = CloudDelInputSchema.validate(input);
+    const { error } = validate;
+
+    if (error)
+      throw new ValidationError(
+        (error?.details?.map((err) => err.message) as unknown as string) ||
+          "Validation Error!"
+      );
+
+    const cloud = oldImgURL?.split("/")[2];
+    if (cloud !== "res.cloudinary.com")
+      throw new AuthenticationError("Invalid ImageURL!");
+
+    const result = await deleteCloudinary(oldImgURL);
+
+    return {
+      message: result === "ok" ? "Deleted successfully!" : "Deleted unsuccessfully!",
+      status: result === "ok" ? 200 : 500
+    } as CloudDelResponse
+  }
 };
 
 export default uploadFileMutation;

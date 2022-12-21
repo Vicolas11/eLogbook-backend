@@ -236,6 +236,16 @@ export type ChangePswResponse = {
   status: Scalars['Int'];
 };
 
+export type CloudDelInput = {
+  oldImgURL: Scalars['String'];
+};
+
+export type CloudDelResponse = {
+  __typename?: 'CloudDelResponse';
+  message: Scalars['String'];
+  status: Scalars['Int'];
+};
+
 export type Coordinator = {
   __typename?: 'Coordinator';
   avatar?: Maybe<Scalars['String']>;
@@ -458,6 +468,7 @@ export type Mutation = {
   deleteCoordinator?: Maybe<DeletedCoordinator>;
   deleteEligible?: Maybe<ReturnRegisterEligible>;
   deleteFile?: Maybe<UploadResponse>;
+  deleteFromCloudinary?: Maybe<CloudDelResponse>;
   deleteLogbook?: Maybe<ResponseLogbook>;
   deleteOrganisation?: Maybe<DeletedOrganisation>;
   deleteStudent?: Maybe<DeletedStudent>;
@@ -516,6 +527,11 @@ export type MutationDeleteEligibleArgs = {
 
 export type MutationDeleteFileArgs = {
   deleteInput: FileDelInput;
+};
+
+
+export type MutationDeleteFromCloudinaryArgs = {
+  input: CloudDelInput;
 };
 
 
@@ -893,6 +909,7 @@ export type ReturnRegisteredSupervisor = Token & {
 export type ReturnedEligible = {
   __typename?: 'ReturnedEligible';
   coordinator?: Maybe<Coordinator>;
+  createdAt?: Maybe<Scalars['DateTime']>;
   department?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   institute?: Maybe<Scalars['String']>;
@@ -1184,6 +1201,8 @@ export type ResolversTypes = {
   Byte: ResolverTypeWrapper<Scalars['Byte']>;
   ChangePswInput: ChangePswInput;
   ChangePswResponse: ResolverTypeWrapper<ChangePswResponse>;
+  CloudDelInput: CloudDelInput;
+  CloudDelResponse: ResolverTypeWrapper<CloudDelResponse>;
   Coordinator: ResolverTypeWrapper<Coordinator>;
   CoordinatorInput: CoordinatorInput;
   CountryCode: ResolverTypeWrapper<Scalars['CountryCode']>;
@@ -1324,6 +1343,8 @@ export type ResolversParentTypes = {
   Byte: Scalars['Byte'];
   ChangePswInput: ChangePswInput;
   ChangePswResponse: ChangePswResponse;
+  CloudDelInput: CloudDelInput;
+  CloudDelResponse: CloudDelResponse;
   Coordinator: Coordinator;
   CoordinatorInput: CoordinatorInput;
   CountryCode: Scalars['CountryCode'];
@@ -1486,6 +1507,12 @@ export interface ByteScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type ChangePswResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ChangePswResponse'] = ResolversParentTypes['ChangePswResponse']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CloudDelResponseResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['CloudDelResponse'] = ResolversParentTypes['CloudDelResponse']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1713,6 +1740,7 @@ export type MutationResolvers<ContextType = IContext, ParentType extends Resolve
   deleteCoordinator?: Resolver<Maybe<ResolversTypes['DeletedCoordinator']>, ParentType, ContextType, RequireFields<MutationDeleteCoordinatorArgs, 'emailInput'>>;
   deleteEligible?: Resolver<Maybe<ResolversTypes['ReturnRegisterEligible']>, ParentType, ContextType, RequireFields<MutationDeleteEligibleArgs, 'deleteInput'>>;
   deleteFile?: Resolver<Maybe<ResolversTypes['UploadResponse']>, ParentType, ContextType, RequireFields<MutationDeleteFileArgs, 'deleteInput'>>;
+  deleteFromCloudinary?: Resolver<Maybe<ResolversTypes['CloudDelResponse']>, ParentType, ContextType, RequireFields<MutationDeleteFromCloudinaryArgs, 'input'>>;
   deleteLogbook?: Resolver<Maybe<ResolversTypes['ResponseLogbook']>, ParentType, ContextType, RequireFields<MutationDeleteLogbookArgs, 'input'>>;
   deleteOrganisation?: Resolver<Maybe<ResolversTypes['DeletedOrganisation']>, ParentType, ContextType, RequireFields<MutationDeleteOrganisationArgs, 'emailInput'>>;
   deleteStudent?: Resolver<Maybe<ResolversTypes['DeletedStudent']>, ParentType, ContextType, RequireFields<MutationDeleteStudentArgs, 'emailInput'>>;
@@ -1995,6 +2023,7 @@ export type ReturnRegisteredSupervisorResolvers<ContextType = IContext, ParentTy
 
 export type ReturnedEligibleResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnedEligible'] = ResolversParentTypes['ReturnedEligible']> = {
   coordinator?: Resolver<Maybe<ResolversTypes['Coordinator']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   department?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   institute?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -2128,6 +2157,7 @@ export type Resolvers<ContextType = IContext> = {
   BlogPost?: BlogPostResolvers<ContextType>;
   Byte?: GraphQLScalarType;
   ChangePswResponse?: ChangePswResponseResolvers<ContextType>;
+  CloudDelResponse?: CloudDelResponseResolvers<ContextType>;
   Coordinator?: CoordinatorResolvers<ContextType>;
   CountryCode?: GraphQLScalarType;
   Cuid?: GraphQLScalarType;

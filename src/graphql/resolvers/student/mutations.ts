@@ -20,6 +20,7 @@ const studentMutations: MutationResolvers = {
       department,
       email,
       password,
+      phone,
       place: organisationEmail,
     } = input;
 
@@ -42,6 +43,13 @@ const studentMutations: MutationResolvers = {
     });
 
     if (studentExist) throw new AuthenticationError("Student already existed!");
+
+    // Check if Student Phone Number Already Exist
+    const studentPhoneExist = await prisma.student.findFirst({
+      where: { phone },
+    });
+
+    if (studentPhoneExist) throw new AuthenticationError("Phone number already existed!");
 
     // Check if the Student is Eligible
     const eligible = await prisma.eligible.findUnique({
@@ -223,11 +231,14 @@ const studentMutations: MutationResolvers = {
       role: updatedStudent.user,
     });
 
+    const encryptAccessToken = encryptToken(accessToken);
+    const encryptRefreshToken = encryptToken(refreshToken);
+
     return {
       status: 201,
       message: "Updated student successfully!",
-      accessToken,
-      refreshToken,
+      accessToken: encryptAccessToken,
+      refreshToken: encryptRefreshToken,
       student: updatedStudent,
     } as ReturnRegisteredStudent;
   },

@@ -4,3 +4,8 @@ type UploadResponse {
   status: Int!
   actId: String!
 }
+
+type CloudDelResponse {
+  message: String!
+  status: Int!
+}

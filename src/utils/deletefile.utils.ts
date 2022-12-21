@@ -5,7 +5,8 @@ const deleteFile = async (oldImgURL: string, subpath: string) => {
   const imgURL = oldImgURL.split("/");
   const lastIdx = imgURL.length - 1;
   const filepath = imgURL[lastIdx];
-  const isRemoved = await fileRemover({filepath, subpath});
+  // Remove File Locally
+  const isRemoved = await fileRemover({filepath, subpath });
   if (isRemoved) return true;
 };
 

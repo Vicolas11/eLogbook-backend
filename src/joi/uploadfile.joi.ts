@@ -21,3 +21,7 @@ export const FileDelInputSchema = Joi.object({
   actId: Joi.string().length(13),
   type: Joi.string().valid("logo", "chats", "avatar", "diagrams", "blogposts"),
 });
+
+export const CloudDelInputSchema = Joi.object({
+  oldImgURL: Joi.string().min(90).required()
+});

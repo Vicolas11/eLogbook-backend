@@ -3,10 +3,10 @@ import generateUniqueFilename from "./genfilename.utils";
 import { UserInputError } from "apollo-server-express";
 import { envConfig } from "../configs/env.config";
 import checkFileSize from "./checkfile.util";
-import { createWriteStream, fstat } from "fs";
+import fileRemover from "./fileremove.util";
+import { createWriteStream } from "fs";
 import { config } from "dotenv";
 import { join } from "path";
-import fileRemover from "./fileremove.util";
 
 config();
 
@@ -20,23 +20,21 @@ const readStreamFile = async (args: IReadStream): Promise<string> => {
     throw new UserInputError("Invalid image file uploaded!");
   }
 
-  // Check File size is not more than 1MB
+  // Check File size is not more than 100KB
   try {
-    const oneMB: number = 1000000; // 1MB
-    await checkFileSize(createReadStream, oneMB);
+    const hundredKB: number = 100000; // 100KB
+    await checkFileSize(createReadStream, hundredKB);
   } catch (error) {
     if (typeof error === "number") {
-      throw new UserInputError("Maximum file size is 1MB!");
+      throw new UserInputError("Maximum file size is 100KB!");
     }
   }
 
   const stream = createReadStream();
   const unqueFilename = generateUniqueFilename(subpath);
-  const pathname = join(
-    __dirname,
-    `../../public/upload/${subpath}/${unqueFilename}`
-  );
+  const pathname = join(__dirname,`../../public/upload/${subpath}/${unqueFilename}`);
   let URL: string = "";
+
   // DELETE AND UPDATE USER IMAGE
   if (action === "update" && oldImgURL !== "") {
     const imgURL = oldImgURL?.split("/");
