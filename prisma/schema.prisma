@@ -20,8 +20,8 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  url = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 enum Level {
@@ -109,6 +109,10 @@ model Student {
   supervisorId   String?
   coordinatorId  String?
   organisationId String?
+
+  @@index([supervisorId])
+  @@index([coordinatorId])
+  @@index([organisationId])
 }
 
 model Supervisor {
@@ -130,6 +134,8 @@ model Supervisor {
   joinedDate    DateTime     @default(now())
   coordinatorId String?
   eligibles     Eligible[]
+
+  @@index([coordinatorId])
 }
 
 model Coordinator {
@@ -198,6 +204,9 @@ model Eligible {
   createdAt     DateTime?    @default(now())
   supervisorId  String?
   coordinatorId String?
+
+  @@index([supervisorId])
+  @@index([coordinatorId])
 }
 
 model Logbook {
@@ -212,4 +221,6 @@ model Logbook {
   student     Student?  @relation(fields: [studentId], references: [id])
   createdAt   DateTime? @default(now())
   studentId   String?
+
+  @@index([studentId])
 }
