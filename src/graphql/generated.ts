@@ -867,7 +867,9 @@ export type ReturnRegisteredAdmin = Token & {
   __typename?: 'ReturnRegisteredAdmin';
   accessToken: Scalars['String'];
   admin: RegisteredAdmin;
+  message: Scalars['String'];
   refreshToken: Scalars['String'];
+  status: Scalars['Int'];
 };
 
 export type ReturnRegisteredCoordinator = Token & {
@@ -1981,7 +1983,9 @@ export type ReturnRegisterEligibleResolvers<ContextType = IContext, ParentType e
 export type ReturnRegisteredAdminResolvers<ContextType = IContext, ParentType extends ResolversParentTypes['ReturnRegisteredAdmin'] = ResolversParentTypes['ReturnRegisteredAdmin']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   admin?: Resolver<ResolversTypes['RegisteredAdmin'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

@@ -20,6 +20,7 @@ import studentQueries from "./student/queries";
 import uploadFileMutation from "./uploadfile";
 import studentLogin from "./login/student";
 import { Resolvers } from "../generated";
+import adminLogin from "./login/admin";
 
 const resolvers: Resolvers = {
   ...scalarResolvers,
@@ -30,6 +31,7 @@ const resolvers: Resolvers = {
     ...organisationQueries,
     ...blogPostQueries,
     ...eligibleQueries,
+    ...adminLogin,
     ...studentLogin,
     ...supervisorLogin,
     ...coordinatorLogin,

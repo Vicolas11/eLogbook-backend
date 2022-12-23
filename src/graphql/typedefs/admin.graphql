@@ -20,6 +20,8 @@ type RegisteredAdmin {
 }
 
 type ReturnRegisteredAdmin implements Token {
+  status: Int!
+  message: String!
   accessToken: String!
   refreshToken: String!
   admin: RegisteredAdmin!

@@ -19,7 +19,8 @@
     "format": "npx prisma format",
     "studio": "npx prisma studio",
     "codegen": "graphql-codegen --config codegen.yml",
-    "log:schema": "npx ts-node src/graphql/schema.ts"
+    "log:schema": "npx ts-node src/graphql/schema.ts",    
+    "admin": "ts-node scripts/manage-admin.ts"
   },
   "keywords": [],
   "author": "Vicolas Akoh",
