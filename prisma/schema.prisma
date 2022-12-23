@@ -15,13 +15,14 @@ generator docs {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
 }
 
 enum Level {
@@ -46,7 +47,7 @@ enum User {
 
 enum Title {
   Prof @map("Professor")
-  Dr @map("Doctor")  
+  Dr   @map("Doctor")
   Mr
   Mrs
   Miss
@@ -120,15 +121,15 @@ model Supervisor {
   title         Title
   firstName     String
   lastName      String
-  staffID       String      @unique
-  phone         String      @unique
+  staffID       String       @unique
+  phone         String       @unique
   institute     String
   department    String
   gender        Gender?
   email         String       @unique
   password      String
-  avatar        String?     @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
-  user          User        @default(Supervisor)
+  avatar        String?      @default("https://i.pinimg.com/236x/00/70/d0/0070d05bc3d01aa3e04e5ebab7132985.jpg")
+  user          User         @default(Supervisor)
   students      Student[]
   coordinator   Coordinator? @relation(fields: [coordinatorId], references: [id])
   joinedDate    DateTime     @default(now())
@@ -143,8 +144,8 @@ model Coordinator {
   title       Title
   firstName   String
   lastName    String
-  staffID     String      @unique
-  phone       String      @unique
+  staffID     String       @unique
+  phone       String       @unique
   institute   String
   department  String
   gender      Gender?
@@ -162,7 +163,7 @@ model Organisation {
   id         String    @id @default(uuid())
   name       String
   sector     Sector
-  phone      String   @unique
+  phone      String    @unique
   address    String
   employees  Int
   email      String    @unique
