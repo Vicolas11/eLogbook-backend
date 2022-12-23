@@ -181,7 +181,7 @@ const coordinatorMutations: MutationResolvers = {
   deleteCoordinator: async (_, { emailInput }, { prisma, auth }) => {
     const token = decryptToken(auth) as string;
     const user = getUser(token);
-    const { email: loginUserEmail, role } = user;
+    const { email: loginUserEmail, role, id: loginUserID } = user;
 
     // Authenticate user
     if (!user || loginUserEmail === '' || role === '')
@@ -216,11 +216,17 @@ const coordinatorMutations: MutationResolvers = {
       throw new AuthenticationError("Not authorized: not a genuine user!");
     }
 
+    //Delete the Eligible Data Associated with the Coordinator
+    await prisma.eligible.deleteMany({ 
+      where: { coordinatorId: loginUserID  } 
+    });
+
     // Delete Coordinator
     const deletedCoordinator = await prisma.coordinator.delete({
       where: { email: loginUserEmail },
     });
-    const { id: deletedId, firstName, lastName, staffID } = deletedCoordinator;
+
+    const { id: deletedId, firstName, lastName, staffID } = deletedCoordinator;    
 
     return {
       status: 200,
