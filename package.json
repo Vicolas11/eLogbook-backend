@@ -12,6 +12,7 @@
     "start": "node index.js",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
+    "push": "prisma db push",
     "reset": "prisma migrate reset",
     "status": "prisma migrate status",
     "deploy": "prisma migrate deploy",
